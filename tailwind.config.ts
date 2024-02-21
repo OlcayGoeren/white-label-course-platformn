@@ -1,4 +1,3 @@
-import { nextui } from "@nextui-org/react"
 import type { Config } from "tailwindcss"
 
 const config = {
@@ -29,6 +28,7 @@ const config = {
         darkBlue: "#1D3557",
         strongYellow: "#FCA311",
         lightGray: "#E5E5E5",
+        borderGray: "#646464",
 
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
