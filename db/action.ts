@@ -5,7 +5,6 @@ import z, { ZodError } from "zod";
 
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres, { PostgresError } from 'postgres'
-import { songs } from './schema'
 
 const scheme = z.object({
     title: z.string().min(1),
