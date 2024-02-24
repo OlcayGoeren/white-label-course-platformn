@@ -15,6 +15,20 @@
       "when": 1708761366746,
       "tag": "0001_past_frog_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708801739895,
+      "tag": "0002_powerful_the_anarchist",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1708804341117,
+      "tag": "0003_pink_quasar",
+      "breakpoints": true
     }
   ]
 }
