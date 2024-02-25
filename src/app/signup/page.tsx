@@ -52,9 +52,9 @@ export default function SignUp() {
 
 
   return (
-    <main className="flex flex-col lg:flex-row">
-      <div className="hidden lg:flex flex-1 flex-col bg-darkBlue h-screen items-center px-10 pt-20">
-        <Image alt="company" width={300} height={100} src={"/brand.png"} />
+    <main className="flex flex-col lg:flex-row [&>*]:py-10">
+      <div className="hidden lg:flex flex-1 flex-col bg-darkBlue items-center px-10">
+        {/* <Image className="w-44" alt="company" width={300} height={100} src={"/brand.png"} /> */}
         <div className="text-center flex flex-col gap-3">
           <Headline variant="h2" color="white">
             LernLab - Die Zukunft des lernens
