@@ -1,0 +1,1 @@
+ALTER TABLE "Organization" ADD CONSTRAINT "Organization_domain_unique" UNIQUE("domain");

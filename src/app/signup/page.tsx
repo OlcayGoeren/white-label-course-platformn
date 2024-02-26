@@ -4,42 +4,17 @@ import InputLabel from "@/components/self/InputLabel";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { ZodType, z } from 'zod'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpFormData, SignUpFormDataSchema } from "@/types/signUp";
 
 
 
-export interface SignUpFormData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  phone: string;
-  domain: string;
-  iban: string;
-  accountHolder: string;
-}
-
-export const SignUpFormDataSchema: ZodType<SignUpFormData> = z.object({
-  email: z.string().email(),
-  password: z.string().min(8), // Example: Password must be at least 8 characters long
-  firstName: z.string().min(1), // Ensuring the string is not empty
-  lastName: z.string().min(1), // Ensuring the string is not empty
-  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // Example: YYYY-MM-DD format
-  phone: z.string().min(10), // Example: Assuming a minimum length for phone numbers
-  domain: z.string().url(), // Validates if the string is a valid URL
-  iban: z.string().min(15), // Example: Basic validation for IBAN length
-  accountHolder: z.string().min(1), // Ensuring the string is not empty
-});
 
 export default function SignUp() {
   const {
     register,
     handleSubmit,
-    watch,
-    reset,
     formState: { errors }
   } = useForm<SignUpFormData>({
     resolver: zodResolver(SignUpFormDataSchema)

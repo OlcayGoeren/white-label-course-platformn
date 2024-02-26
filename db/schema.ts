@@ -8,7 +8,7 @@ import { AnyPgColumn, boolean, date, foreignKey, integer, json, pgTable, primary
 export const organization = pgTable('Organization', {
   id: serial('id').primaryKey(),
   telephone: text('telephone').notNull(),
-  domain: text('domain').notNull(),
+  domain: text('domain').unique().notNull(),
   iban: text('iban').notNull(),
   accountOwner: text('accountOwner').notNull(),
 });
@@ -23,7 +23,7 @@ export const user = pgTable('User', {
   role: text('role').notNull(),
   organization: integer('organization').references(() => organization.id).notNull()
 }, (t) => ({
-  unq: unique().on(t.email, t.organization),
+  uniq: unique().on(t.email, t.organization),
 }));
 
 export const userRelations = relations(user, ({ one }) => ({
