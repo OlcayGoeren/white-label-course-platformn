@@ -7,29 +7,53 @@ import Image from "next/image";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpFormData, SignUpFormDataSchema } from "@/types/signUp";
-
-
-
+import axios from "axios";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
+
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<SignUpFormData>({
-    resolver: zodResolver(SignUpFormDataSchema)
-  })
+  } = useForm<SignUpFormData>(
+    {
+      resolver: zodResolver(SignUpFormDataSchema)
+    }
+  )
 
 
-  function submitData(data: SignUpFormData) {
-    alert(JSON.stringify(data, null, 2))
+  async function submitData(data: SignUpFormData) {
+    try {
+      await axios.post('/api/signup', data);
+
+      debugger;
+      // Signup success --> Login
+      await signIn(
+        "credentials",
+        {
+          redirect: false,
+          email: data.email,
+          password: data.password,
+        },
+        {}
+      )
+      
+
+      router.push("/dashboard");
+
+    } catch (error) {
+
+    }
+
   }
 
 
   return (
-    <main className="flex flex-col lg:flex-row [&>*]:py-10">
+    <main className="flex flex-col lg:flex-row [&>*]:py-10 h-screen">
       <div className="hidden lg:flex flex-1 flex-col bg-darkBlue items-center px-10">
-        {/* <Image className="w-44" alt="company" width={300} height={100} src={"/brand.png"} /> */}
         <div className="text-center flex flex-col gap-3">
           <Headline variant="h2" color="white">
             LernLab - Die Zukunft des lernens
@@ -49,9 +73,8 @@ export default function SignUp() {
           </ul>
         </div>
       </div>
-      <div className="flex flex-col gap-10 items-center lg:justify-center lg:pt-0 pt-20 flex-1 xl:flex-col py-14 lg:py-0">
+      <div className="flex flex-col gap-10 items-center lg:pt-0 flex-1 xl:flex-col ">
         <div className="flex flex-col justify-center items-center">
-          <Image className="lg:hidden w-28 lg:w-auto" alt="company" width={300} height={100} src={"/brand.png"} />
           <Headline variant="h1">
             Create an Account
           </Headline>
@@ -64,22 +87,22 @@ export default function SignUp() {
             <Headline variant="h4">
               Persönliche Daten
             </Headline>
-            <InputLabel label="Vorname" type="text" id="firstName" register={register} errors={errors} />
-            <InputLabel label="Nachname" type="text" id="lastName" register={register} errors={errors} />
-            <InputLabel label="Geburtsdatum" type="date" id="birthDate" register={register} errors={errors} />
-            <InputLabel label="Telefon" type="tel" id="phone" register={register} errors={errors} />
+            <InputLabel errors={errors} label="Vorname" type="text" id="forname" register={register} />
+            <InputLabel errors={errors} label="Nachname" type="text" id="surname" register={register} />
+            <InputLabel errors={errors} label="Geburtsdatum" type="text" id="birthDate" register={register} />
+            <InputLabel errors={errors} label="Telefon" type="tel" id="telephone" register={register} />
 
             <Headline variant="h4">
               Organisation Daten
             </Headline>
-            <InputLabel label="Domain" type="text" id="domain" register={register} errors={errors} />
-            <InputLabel label="IBAN" type="text" id="iban" register={register} errors={errors} />
-            <InputLabel label="Kontoinhaber" type="text" id="accountHolder" register={register} errors={errors} />
+            <InputLabel errors={errors} label="Domain" type="text" id="domain" register={register} />
+            <InputLabel errors={errors} label="IBAN" type="text" id="iban" register={register} />
+            <InputLabel errors={errors} label="Kontoinhaber" type="text" id="accountOwner" register={register} />
             <Headline variant="h4">
-              Login Daten
+              Login Datenn
             </Headline>
-            <InputLabel label="E-Mail" type="email" id="email" register={register} errors={errors} />
-            <InputLabel label="Passwort" type="password" id="password" register={register} errors={errors} />
+            <InputLabel errors={errors} label="E-Mail" type="email" id="email" register={register} />
+            <InputLabel errors={errors} label="Passwort" type="password" id="password" register={register} />
             <Button className="">Enroll now</Button>
           </section>
         </form>

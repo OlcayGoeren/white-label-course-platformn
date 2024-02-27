@@ -7,8 +7,42 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay"
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInFormDataSchema, SignUpFormDataSchema } from "@/types/signUp";
+import { signIn } from "next-auth/react";
 
 export default function SignIn() {
+
+    const router = useRouter();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<{ email: string, password: string }>({
+        resolver: zodResolver(SignInFormDataSchema)
+    })
+
+
+    async function submitData(data: { email: string, password: string }) {
+        try {
+            await signIn(
+                "credentials",
+                {
+                    redirect: false,
+                    email: data.email,
+                    password: data.password,
+                },
+                {}
+            )
+            router.push("/dashboard");
+        } catch (error) {
+
+        }
+    }
+
+
     return (
         <main className="flex min-h-screen flex-col items-center justify-center md:flex-row">
             <div className="hidden lg:flex flex-1 flex-col h-screen w-full bg-darkBlue items-center justify-center">
@@ -24,10 +58,9 @@ export default function SignIn() {
                         Already have an account? <Link className="underline" href="/login">Sign in</Link>
                     </Headline>
                 </header>
-                <form className="flex flex-col items-center justify-center gap-3 lg:gap-7 my-10 lg:my-14 lg:w-[40%]">
-
-                    <InputLabel label="Email" type="email" />
-                    <InputLabel label="Password" type="password" />
+                <form onSubmit={handleSubmit(submitData)} className="flex flex-col items-center justify-center gap-3 lg:gap-7 my-10 lg:my-14 lg:w-[40%]">
+                    <InputLabel register={register} errors={errors} id={"email"} label="Email" type="email" />
+                    <InputLabel register={register} errors={errors} id={"password"} label="Password" type="password" />
                     <Button className="px-10 mt-7 lg:mt-16">Sign in</Button>
                 </form>
             </div>

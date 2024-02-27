@@ -5,36 +5,22 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1708761271083,
-      "tag": "0000_equal_vision",
+      "when": 1709057302925,
+      "tag": "0000_complete_lionheart",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1708761366746,
-      "tag": "0001_past_frog_thor",
+      "when": 1709057542927,
+      "tag": "0001_pale_shocker",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "5",
-      "when": 1708801739895,
-      "tag": "0002_powerful_the_anarchist",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1708804341117,
-      "tag": "0003_pink_quasar",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1708892105782,
-      "tag": "0004_big_talkback",
+      "when": 1709067955603,
+      "tag": "0002_careful_quasimodo",
       "breakpoints": true
     }
   ]

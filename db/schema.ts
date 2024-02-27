@@ -1,12 +1,12 @@
 import { relations } from "drizzle-orm";
-import { AnyPgColumn, boolean, date, foreignKey, integer, json, pgTable, primaryKey, serial, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
+import { AnyPgColumn, boolean, date, foreignKey, integer, json, pgTable, primaryKey, uuid, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
 
 
 
 
 // Definition der Organization-Tabelle
 export const organization = pgTable('Organization', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   telephone: text('telephone').notNull(),
   domain: text('domain').unique().notNull(),
   iban: text('iban').notNull(),
@@ -15,16 +15,14 @@ export const organization = pgTable('Organization', {
 
 // Definition der User-Tabelle
 export const user = pgTable('User', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   forname: text('forname').notNull(),
   surname: text('surname').notNull(),
   birthdate: date('birthdate').notNull(),
-  email: text('email').notNull(),
-  role: text('role').notNull(),
-  organization: integer('organization').references(() => organization.id).notNull()
-}, (t) => ({
-  uniq: unique().on(t.email, t.organization),
-}));
+  email: text('email').unique().notNull(),
+  password: text('password').notNull(),
+  organization: uuid('organization').references(() => organization.id).notNull()
+});
 
 export const userRelations = relations(user, ({ one }) => ({
   organization: one(organization, {
@@ -39,14 +37,14 @@ export const organizationUserRelations = relations(organization, ({ many }) => (
 
 // // Definition der Course-Tabelle
 export const course = pgTable('Course', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description').notNull(),
   status: text('status').notNull(),
-  instructor: integer('instructor').references(() => user.id).notNull(),
+  instructor: uuid('instructor').references(() => user.id).notNull(),
   questions: json('questions'),
   price: integer('price').notNull(),
-  organization: integer('organization').references(() => organization.id),
+  organization: uuid('organization').references(() => organization.id),
 });
 
 export const courseOrganizationRelations = relations(course, ({ one }) => ({
@@ -61,14 +59,14 @@ export const organizationCourseRelations = relations(organization, ({ many }) =>
 }))
 
 export const module = pgTable('Module', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description').notNull(),
-  course: integer('course').references((): AnyPgColumn => course.id).notNull(),
+  course: uuid('course').references((): AnyPgColumn => course.id).notNull(),
   order: integer('order').notNull(),
   status: varchar('status').notNull(),
   allowPreview: boolean('allowPreview').default(false).notNull(),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const moduleOrganizationRelations = relations(module, ({ one }) => ({
@@ -96,14 +94,14 @@ export const courseModuleRelations = relations(course, ({ many }) => ({
 
 
 export const lesson = pgTable('Lesson', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
-  module: integer('module').references((): AnyPgColumn => module.id),
+  module: uuid('module').references((): AnyPgColumn => module.id),
   order: integer('order'),
   status: text('status'),
   allowPreview: boolean('allowPreview').default(false),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const lessonOrganizationRelations = relations(lesson, ({ one }) => ({
@@ -129,12 +127,12 @@ export const moduleLessonRelations = relations(module, ({ many }) => ({
 }))
 
 export const courseContent = pgTable('CourseContent', {
-  id: serial('id').primaryKey(),
-  lesson: integer('lesson').references((): AnyPgColumn => lesson.id),
+  id: uuid('id').defaultRandom().primaryKey(),
+  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id),
   order: integer('order'),
   lectureType: text('lectureType'),
   lectureConfig: json('lectureConfig'),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const courseContentOrganizationRelations = relations(courseContent, ({ one }) => ({
@@ -163,12 +161,12 @@ export const lessonCourseContentRelations = relations(lesson, ({ many }) => ({
 
 
 export const question = pgTable('Question', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   text: text('text'),
-  lesson: integer('lesson').references((): AnyPgColumn => lesson.id),
-  user: integer('user').references((): AnyPgColumn => user.id),
+  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id),
+  user: uuid('user').references((): AnyPgColumn => user.id),
   createdAt: timestamp('createdAt', { mode: "string" }).defaultNow(),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const questiontOrganizationRelations = relations(question, ({ one }) => ({
@@ -205,12 +203,12 @@ export const userQuestionRelations = relations(user, ({ many }) => ({
 }))
 
 export const answer = pgTable('Answer', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   text: text('text'),
-  question: integer('question').references((): AnyPgColumn => question.id),
-  user: integer('user').references((): AnyPgColumn => user.id),
+  question: uuid('question').references((): AnyPgColumn => question.id),
+  user: uuid('user').references((): AnyPgColumn => user.id),
   createdAt: timestamp('createdAt', { mode: "string" }).defaultNow(),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const answerOrganizationRelations = relations(answer, ({ one }) => ({
@@ -247,12 +245,12 @@ export const questionAnswerRelations = relations(question, ({ many }) => ({
 }))
 
 export const invoice = pgTable('Invoice', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   amount: integer('text'),
   date: timestamp('date', { mode: "string" }).defaultNow(),
-  user: integer('user').references((): AnyPgColumn => user.id),
-  course: integer('course').references((): AnyPgColumn => course.id),
-  organization: integer('organization').references((): AnyPgColumn => organization.id).notNull(),
+  user: uuid('user').references((): AnyPgColumn => user.id),
+  course: uuid('course').references((): AnyPgColumn => course.id),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
 export const insvoiceOrganizationRelations = relations(invoice, ({ one }) => ({
