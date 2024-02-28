@@ -1,3 +1,4 @@
+import { CounterContextProvider } from "@/context/sidenav.context";
 import "./globals.css";
 import Providers from "./providers";
 
@@ -10,7 +11,9 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <body>
-          {children}
+          <CounterContextProvider>
+            {children}
+          </CounterContextProvider>
         </body>
       </Providers>
     </html>
