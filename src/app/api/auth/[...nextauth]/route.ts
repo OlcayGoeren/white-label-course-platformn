@@ -28,7 +28,11 @@ export const authOptions: AuthOptions = {
                         const result = compareSync(req.body?.password ?? "", foundUser.password);
 
                         if (result) {
-                            return foundUser;
+                            return {
+                                email: foundUser.email,
+                                id: foundUser.id,
+                                role: "admin",
+                            };
                         } else {
                             throw new Error("Password does not match email");
                         }
@@ -42,21 +46,18 @@ export const authOptions: AuthOptions = {
         })
 
     ],
-    // callbacks: {
-    //     jwt({ token, user }) {
-    //         if (user) {
-    //             token.role = user.role
-    //             token.verified = user.verified
-    //         }
-    //         return token
-    //     },
-    //     session({ session, token }) {
-    //         session.user.idk = "?!?!"
-    //         session.user.role = token.role
-    //         session.user.verified = token.verified
-    //         return session
-    //     }
-    // }
+    callbacks: {
+        jwt({ token, user,  }) {
+            if (user) {
+                token.role = user.role
+            }
+            return token
+        },
+        // session({ session, token }) {
+        //     session.user.role = token.role
+        //     return session
+        // }
+    }
 }
 
 const handler = NextAuth(authOptions)

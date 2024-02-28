@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInFormDataSchema, SignUpFormDataSchema } from "@/types/signUp";
 import { signIn } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function SignIn() {
 
@@ -27,7 +28,7 @@ export default function SignIn() {
 
     async function submitData(data: { email: string, password: string }) {
         try {
-            await signIn(
+            const result = await signIn(
                 "credentials",
                 {
                     redirect: false,
@@ -36,11 +37,18 @@ export default function SignIn() {
                 },
                 {}
             )
+            console.log("success", result)
+
             router.push("/dashboard");
         } catch (error) {
+            console.log(error)
 
         }
     }
+
+    useEffect(() => {
+        router.push("/dashboard");
+    }, [router])
 
 
     return (

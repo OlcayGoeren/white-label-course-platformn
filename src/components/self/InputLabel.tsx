@@ -5,9 +5,9 @@ import { FieldErrors, UseFormRegister } from 'react-hook-form';
 function InputLabel(
     { label, type, id, register, errors }:
         {
-            label: string, type: HTMLInputTypeAttribute, register: UseFormRegister<SignUpFormData>,
-            id: keyof SignUpFormData
-            , errors: FieldErrors<SignUpFormData>
+            label: string, type: HTMLInputTypeAttribute, register: UseFormRegister<any>,
+            id: string
+            , errors: FieldErrors<any>
         }
 ) {
     return (
