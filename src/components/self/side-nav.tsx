@@ -5,16 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-
-// import {
-//   Accordion,
-//   AccordionContent,
-//   AccordionItem,
-//   AccordionTrigger,
-// } from "@/components/layout/subnav-accordion";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavItem } from "./sidebar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./subnav-accordion";
+import { SideNavContext } from "@/context/sidenav.context";
+import { ChevronDownIcon } from "lucide-react";
 
 interface SideNavProps {
   items: NavItem[];
@@ -24,7 +19,9 @@ interface SideNavProps {
 
 export function SideNav({ items, setOpen, className }: SideNavProps) {
   const path = usePathname();
-  const [isOpen, setIsOpen] = useState(true);
+  const { state, dispatch } = useContext(SideNavContext);
+  const { isOpen } = state
+
   const [openItem, setOpenItem] = useState("");
   const [lastOpenItem, setLastOpenItem] = useState("");
 
@@ -69,8 +66,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
                 </div>
 
                 {isOpen && (
-                  <p>icon</p>
-                  // <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
+                  <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
                 )}
               </AccordionTrigger>
               <AccordionContent className="mt-2 space-y-4 pb-1">

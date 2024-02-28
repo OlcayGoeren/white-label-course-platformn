@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, BookOpenCheck, LayoutDashboard, LucideIcon } from "lucide-react";
 import { SideNav } from "./side-nav";
-import { CounterContext } from "@/context/sidenav.context";
+import { SideNavContext } from "@/context/sidenav.context";
 
 interface SidebarProps {
   className?: string;
@@ -18,7 +18,7 @@ export interface NavItem {
   children?: NavItem[];
 }
 
-const NavItems: NavItem[] = [
+export const NavItems: NavItem[] = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
@@ -58,13 +58,13 @@ const NavItems: NavItem[] = [
 
 
 export default function Sidebar({ className }: SidebarProps) {
-  const { state, dispatch } = useContext(CounterContext);
-  const [isOpen, setIsOpen] = useState(true);
+  const { state, dispatch } = useContext(SideNavContext);
+  const { isOpen } = state
   const [status, setStatus] = useState(false);
 
   const handleToggle = () => {
+    isOpen ? dispatch({ type: "close" }) : dispatch({ type: "open" });
     setStatus(true);
-    setIsOpen(old => !old);
     setTimeout(() => setStatus(false), 500);
   };
   return (
@@ -72,11 +72,10 @@ export default function Sidebar({ className }: SidebarProps) {
       className={cn(
         `relative hidden h-screen border-r pt-20 md:block`,
         status && "duration-500",
-        true ? "w-72" : "w-[78px]",
+        isOpen ? "w-72" : "w-[78px]",
         className
       )}
     >
-      icon
       <ArrowLeft
         className={cn(
           "absolute -right-3 top-20 cursor-pointer rounded-full border bg-background text-3xl text-foreground",
