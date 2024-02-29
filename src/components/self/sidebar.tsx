@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import { ArrowLeft, BookOpenCheck, LayoutDashboard, LucideIcon } from "lucide-react";
+import { ArrowLeft, BarChart3, Book, BookOpenCheck, LayoutDashboard, LayoutList, LucideIcon, Settings, UserRound } from "lucide-react";
 import { SideNav } from "./side-nav";
 import { SideNavContext } from "@/context/sidenav.context";
 
@@ -20,37 +20,34 @@ export interface NavItem {
 
 export const NavItems: NavItem[] = [
   {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/",
+    title: "Alle Kurse",
+    icon: Book,
+    href: "/admin/courses",
     color: "text-sky-500",
   },
   {
-    title: "Example",
-    icon: BookOpenCheck,
-    href: "/example",
+    title: "Analytics",
+    icon: BarChart3,
+    href: "/admin/analytics",
     color: "text-orange-500",
-    isChidren: true,
-    children: [
-      {
-        title: "Example-01",
-        icon: BookOpenCheck,
-        color: "text-red-500",
-        href: "/example/employees",
-      },
-      {
-        title: "Example-02",
-        icon: BookOpenCheck,
-        color: "text-red-500",
-        href: "/example/example-02",
-      },
-      {
-        title: "Example-03",
-        icon: BookOpenCheck,
-        color: "text-red-500",
-        href: "/example/example-03",
-      },
-    ],
+  },
+  {
+    title: "Profil",
+    icon: UserRound,
+    href: "/admin/profile",
+    color: "text-sky-500",
+  },
+  {
+    title: "Erinnerung",
+    icon: LayoutList,
+    href: "/admin/notifications",
+    color: "text-sky-500",
+  },
+  {
+    title: "Erinnerung",
+    icon: Settings,
+    href: "/admin/settings",
+    color: "text-sky-500",
   },
 ];
 
