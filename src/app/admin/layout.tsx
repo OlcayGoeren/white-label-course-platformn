@@ -11,9 +11,9 @@ export default function AdminLayout({
     return (
         <>
             <Header />
-            <div className="flex h-screen border-collapse overflow-hidden">
+            <div className="flex  border-collapse overflow-hidden">
                 <Sidebar />
-                <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16 bg-secondary/10 pb-1">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16  pb-1">
                     <div className="flex-1 space-y-4 p-8 pt-6">
                         {children}
                     </div>

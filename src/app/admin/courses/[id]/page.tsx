@@ -9,10 +9,19 @@ import { cn } from "@/lib/utils"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ExternalLink, Plus } from "lucide-react"
 import { KanbanBoard } from "@/components/kanban/KanbanBoard"
+import { useGetCourses } from "../../../../../hooks/getCourses"
 
 
 const SingleCourseAdmin: FC = () => {
+    const { data, error } = useGetCourses();
     const params = useParams<{ id: string }>()
+
+    // Kurs daten entsprechend rendern und anzeigen
+    // lesson mit drauf packen
+    const course = data?.courses.find((course) => course.id === params.id)
+
+
+
     const searchParams = useSearchParams()
 
     const searchTerms = searchParams.get("section");
@@ -30,7 +39,9 @@ const SingleCourseAdmin: FC = () => {
 
 
 
-
+    if (!course) {
+        return <div>Course not found</div>
+    }
 
     return <div className="flex flex-col gap-3">
         <div className="flex flex-row gap-3">

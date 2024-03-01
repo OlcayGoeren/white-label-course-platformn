@@ -1,7 +1,6 @@
+import { CourseStatus } from "@/types/courses";
 
 type Role = 'student' | 'instructor' | 'admin';
-
-type CourseStatus = 'draft' | 'published' | 'closed';
 
 type LectureType = 'video' | 'quiz' | 'text';
 

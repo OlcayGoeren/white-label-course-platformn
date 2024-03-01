@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 
-export const QUERY_KEY = ["GET_COURSES"]
+export const GET_COURSES_KEY = ["GET_COURSES"]
 
 export const fetchCourses = async () => {
   const response = await axios.get("/api/course");
@@ -14,5 +14,5 @@ export const fetchCourses = async () => {
 export const useGetCourses = () => {
   return useQuery<{
     courses: CourseSchema[]
-  }, Error>({ queryKey: QUERY_KEY, queryFn: () => fetchCourses() });
+  }, Error>({ queryKey: GET_COURSES_KEY, queryFn: () => fetchCourses() });
 };

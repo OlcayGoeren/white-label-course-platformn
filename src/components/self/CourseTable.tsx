@@ -10,7 +10,6 @@ import {
     SortingState,
     ColumnFiltersState,
     getFilteredRowModel,
-    VisibilityState,
 } from "@tanstack/react-table"
 
 import {
@@ -29,11 +28,11 @@ import { Button } from "../ui/button"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { CourseTableType, CourseTableStatus, courseTableStatuses } from "@/lib/payments"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select"
 import Link from "next/link"
+import { CourseSchema, CourseStatus, courseTableStatuses } from "@/types/courses"
 
-export const columns: ColumnDef<CourseTableType>[] = [
+export const columns: ColumnDef<CourseSchema>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -72,7 +71,7 @@ export const columns: ColumnDef<CourseTableType>[] = [
         },
         cell({ row }) {
             const title = String(row.getValue("title"));
-            return <Link href={"/" + row.getValue("id")} className="font-medium hover:underline">{title}</Link>
+            return <Link href={"/admin/courses/" + row.original.id} className="font-medium hover:underline">{title}</Link>
         },
     },
     {
@@ -98,22 +97,18 @@ export const columns: ColumnDef<CourseTableType>[] = [
         },
     },
     {
-        accessorKey: "createDate",
+        accessorKey: "createdAt",
         header: () => <div className="">Erstelldatum</div>,
         cell: ({ row }) => {
-            const amount = row.getValue("createDate") as Date;
-            return <div className=" font-medium">{amount.toLocaleDateString()}</div>
+            return <div className=" font-medium">{new Date(row.getValue("createdAt")).toLocaleDateString()}</div>
         },
     },
     {
         accessorKey: "status",
         header: "Status",
         cell({ row }) {
-
-            const currentStatus = row.getValue("status") as CourseTableStatus
-            // CourseTableStatus
+            const currentStatus = row.getValue("status") as CourseStatus;
             return <Select value={currentStatus}>
-                {/* className="w-[180px]" */}
                 <SelectTrigger className="w-[120px]" >
                     <SelectValue placeholder={currentStatus} />
                 </SelectTrigger>

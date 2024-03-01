@@ -1,7 +1,8 @@
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { QUERY_KEY } from './getDoctorDatas';
 import { course } from '../db/schema';
+import { CourseSchemaForm } from '@/types/courses';
+import { GET_COURSES_KEY } from './getCourses';
 // import schema
 
 
@@ -11,12 +12,10 @@ interface ResponseData {
 
 
 
-export const MUTATION_KEY = ['accept_appontments'];
+export const MUTATION_KEY = ['create_course'];
 
-export const acceptAppointment = async (body: typeof course): Promise<ResponseData> => {
+export const createCourse = async (body: CourseSchemaForm): Promise<ResponseData> => {
     try {
-        // mach einfach mit parallelen types leider...
-        // bau zod types...
         const response = await axios.post("/api/course", body);
         return response.data;
     } catch (error) {
@@ -24,14 +23,14 @@ export const acceptAppointment = async (body: typeof course): Promise<ResponseDa
     }
 };
 
-export const useAcceptAppointment = () => {
+export const useCreateCourse = () => {
     const queryClient = useQueryClient();
-    return useMutation<ResponseData, Error, AcceptAppointmentRequest>(
+    return useMutation<ResponseData, Error, CourseSchemaForm>(
         {
-            mutationFn: acceptAppointment,
+            mutationFn: createCourse,
             mutationKey: MUTATION_KEY,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+                queryClient.invalidateQueries({ queryKey: GET_COURSES_KEY })
             }
         }
     );
