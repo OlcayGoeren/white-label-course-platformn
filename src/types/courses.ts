@@ -18,6 +18,7 @@ export const CourseZodSchema = z.object({
     questions: z.string().optional(),
     price: z.number().optional(),
     organization: z.string(),
+    createdAt: z.date(),
 });
 
 export type CourseSchema = z.infer<typeof CourseZodSchema>;

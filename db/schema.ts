@@ -45,6 +45,7 @@ export const course = pgTable('Course', {
   questions: json('questions'),
   price: integer('price'),
   organization: uuid('organization').references(() => organization.id),
+  createdAt: timestamp('createdAt', { mode: "string" }).defaultNow(),
 });
 
 

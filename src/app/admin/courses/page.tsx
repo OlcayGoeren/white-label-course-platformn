@@ -19,6 +19,7 @@ import { CourseSchema, CourseSchemaForm, CourseZodSchema, CourseZodSchemaForm } 
 import InputLabel from "@/components/self/InputLabel";
 import TextAreaLabel from "@/components/self/TextAreaLabel";
 import axios from "axios";
+import { useGetCourses } from "../../../../hooks/getCourses";
 
 interface DrawerDialogDemoProps {
   title: string;
@@ -106,6 +107,11 @@ function ProfileForm({ className }: React.ComponentProps<"form">) {
 
 
 export default function Home() {
+
+  const { data, isLoading, error } = useGetCourses();
+
+  console.log(data, isLoading, error);
+
   return (
     <>
       <div className="flex flex-row items-center justify-between">

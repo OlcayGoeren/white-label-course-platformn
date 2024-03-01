@@ -8,7 +8,15 @@ import { z } from "zod";
 
 export async function GET(request: Request) {
     try {
-        return NextResponse.json({ success: true }, { status: 200 })
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const courses = await db.query.course.findMany({
+            where: (course, { eq }) => eq(course.organization, session.user.organization),
+        })
+        return NextResponse.json({ courses }, { status: 200 })
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error }, { status: 400 })
