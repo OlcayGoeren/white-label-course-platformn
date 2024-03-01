@@ -1,13 +1,17 @@
+"use client"
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { useDndContext, type UniqueIdentifier } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Task, TaskCard } from "./TaskCard";
 import { cva } from "class-variance-authority";
 import { GripVertical } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { DrawerDialogDemo } from "@/app/admin/courses/page";
+import InputLabel from "../self/InputLabel";
+import { useForm } from "react-hook-form";
 
 export interface Column {
   id: UniqueIdentifier;
@@ -28,6 +32,10 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
+
+
+  const { register, handleSubmit, formState: { errors } } = useForm<{ title: string }>();
+
   const tasksIds = useMemo(() => {
     return tasks.map((task) => task.id);
   }, [tasks]);
@@ -68,6 +76,10 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
     }
   );
 
+  function createSubModule(data: { title: string }) {
+    alert(data.title);
+  }
+
   return (
     <Card
       ref={setNodeRef}
@@ -98,7 +110,24 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
       </CardContent>
 
       <CardFooter className="pb-2 flex justify-center">
-        <Button>Inhalt hinzufügen</Button>
+        <DrawerDialogDemo
+          trigger={<Button>Inhalt hinzufügen</Button>}
+          title="Inhalt hinzufügen"
+          subTitle="Den Titel können Sie im nachinein jederzeit ändern"
+        >
+          <form
+            className="grid items-start gap-4"
+            onSubmit={handleSubmit(createSubModule)}>
+            <InputLabel
+              label="Titel"
+              register={register}
+              id="title"
+              type="text"
+              errors={errors} />
+            <Button type="submit">Jetzt erstellen</Button>
+          </form>
+        </DrawerDialogDemo>
+
       </CardFooter>
     </Card>
   );

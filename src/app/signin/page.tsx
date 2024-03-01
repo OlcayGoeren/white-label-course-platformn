@@ -39,7 +39,7 @@ export default function SignIn() {
             )
             console.log("success", result)
 
-            router.push("/dashboard");
+            router.push("/admin/courses");
         } catch (error) {
             console.log(error)
 

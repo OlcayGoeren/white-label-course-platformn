@@ -32,6 +32,7 @@ export const authOptions: AuthOptions = {
                                 email: foundUser.email,
                                 id: foundUser.id,
                                 role: "admin",
+                                organization: foundUser.organization
                             };
                         } else {
                             throw new Error("Password does not match email");
@@ -50,13 +51,23 @@ export const authOptions: AuthOptions = {
         jwt({ token, user, }) {
             if (user) {
                 token.role = user.role
+                token.id = user.id
+                token.email = user.email
+                token.organization = user.organization
+
+
             }
             return token
         },
-        // session({ session, token }) {
-        //     session.user.role = token.role
-        //     return session
-        // }
+        session({ session, token }) {
+            session.user.role = token.role
+            session.user.role = token.role
+            session.user.id = token.id
+            session.user.email = token.email
+            session.user.organization = token.organization
+
+            return session
+        }
     }
 }
 

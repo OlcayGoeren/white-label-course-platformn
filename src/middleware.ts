@@ -1,7 +1,5 @@
 import { withAuth } from 'next-auth/middleware'
 
-// export { default } from 'next-auth/middleware'
-
 export default withAuth({
     pages: {
         signIn: "/signin"
@@ -11,7 +9,6 @@ export default withAuth({
             return params.token?.role === "admin"
         },
     })
-}
-)
+})
 
-export const config = { matcher: ["/dashboard"] }
+export const config = { matcher: ["/dashboard", "/admin/:path"] }

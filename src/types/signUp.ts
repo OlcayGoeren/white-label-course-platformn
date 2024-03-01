@@ -13,7 +13,7 @@ export interface SignUpFormData {
     accountOwner: string;
 }
 
-export const SignUpFormDataSchema: ZodType<SignUpFormData> = z.object({
+export const SignUpFormDataSchema: ZodType = z.object({
     email: z.string().email(),
     password: z.string().min(8), // Example: Password must be at least 8 characters long
     forname: z.string().min(1), // Ensuring the string is not empty

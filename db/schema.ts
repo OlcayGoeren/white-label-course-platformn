@@ -43,9 +43,11 @@ export const course = pgTable('Course', {
   status: text('status').notNull(),
   instructor: uuid('instructor').references(() => user.id).notNull(),
   questions: json('questions'),
-  price: integer('price').notNull(),
+  price: integer('price'),
   organization: uuid('organization').references(() => organization.id),
 });
+
+
 
 export const courseOrganizationRelations = relations(course, ({ one }) => ({
   organization: one(organization, {

@@ -22,6 +22,13 @@
       "when": 1709067955603,
       "tag": "0002_careful_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1709299107527,
+      "tag": "0003_silent_blazing_skull",
+      "breakpoints": true
     }
   ]
 }

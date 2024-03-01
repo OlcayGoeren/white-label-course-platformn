@@ -28,8 +28,6 @@ export default function SignUp() {
   async function submitData(data: SignUpFormData) {
     try {
       await axios.post('/api/signup', data);
-
-      debugger;
       // Signup success --> Login
       await signIn(
         "credentials",
