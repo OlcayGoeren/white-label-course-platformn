@@ -192,7 +192,7 @@ export function CourseTable<TData, TValue>({ columns, data, }: DataTableProps<TD
 
     return (
         <div>
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-2">
                 <Input
                     placeholder="Filter Kurse..."
                     value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -201,6 +201,26 @@ export function CourseTable<TData, TValue>({ columns, data, }: DataTableProps<TD
                     }
                     className="max-w-sm"
                 />
+            </div>
+            <div className="flex items-center py-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="">
+                            <span className="sr-only">Open menu</span>
+                            <span>Actions</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                        >
+                            Copy payment ID
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>View customer</DropdownMenuItem>
+                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             <div className="rounded-md border">
                 <Table>

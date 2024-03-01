@@ -39,7 +39,7 @@ export const organizationUserRelations = relations(organization, ({ many }) => (
 export const course = pgTable('Course', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
-  description: text('description').notNull(),
+  description: text('description'),
   status: text('status').notNull(),
   instructor: uuid('instructor').references(() => user.id).notNull(),
   questions: json('questions'),
