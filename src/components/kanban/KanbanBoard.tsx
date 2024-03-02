@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BoardColumn, BoardContainer } from "./BoardColumn";
@@ -10,7 +10,6 @@ import {
   type DragStartEvent,
   useSensor,
   useSensors,
-  KeyboardSensor,
   Announcements,
   UniqueIdentifier,
   TouchSensor,
@@ -20,68 +19,45 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { type Task, TaskCard } from "./TaskCard";
 import type { Column } from "./BoardColumn";
 import { hasDraggableData } from "./utils";
+import { ModuleWithAllRelations } from "@/types/modules";
+import { LessonWithAllRelations } from "@/types/lessons";
+import { usePrevious } from "@uidotdev/usehooks";
+import { ColumnsAndTasksContext } from "@/context/columnsTasks.context";
 
-const defaultCols = [
-  {
-    id: "01" as const,
-    title: "Module 1",
-  },
-  {
-    id: "02" as const,
-    title: "Module 2",
-  },
-  {
-    id: "03" as const,
-    title: "Module 3",
-  },
-] satisfies Column[];
 
-export type ColumnId = (typeof defaultCols)[number]["id"];
+export type ColumnId = string;
 
-const initialTasks: Task[] = [
-  {
-    id: "task1",
-    columnId: "01",
-    content: "Project initiation and planning",
-  },
-  {
-    id: "task2",
-    columnId: "01",
-    content: "Gather requirements from stakeholders",
-  },
-  {
-    id: "task3",
-    columnId: "02",
-    content: "Create wireframes and mockups",
-  },
-  {
-    id: "task4",
-    columnId: "02",
-    content: "Develop homepage layout",
-  },
-  {
-    id: "task5",
-    columnId: "03",
-    content: "Design color scheme and typography",
-  },
-  {
-    id: "task6",
-    columnId: "03",
-    content: "Implement user authentication",
-  },
-  {
-    id: "task7",
-    columnId: "03",
-    content: "Build contact us page",
-  }
-];
+function getColumnsFromModules(modules: ModuleWithAllRelations[]) {
+  return modules.map((module) => {
+    return {
+      id: module.id,
+      title: module.title,
+    };
+  });
+}
 
-export function KanbanBoard() {
-  const [columns, setColumns] = useState<Column[]>(defaultCols);
+function getTasksFromModules(modules: ModuleWithAllRelations[]): Task[] {
+
+  const lessons: LessonWithAllRelations[] = modules.flatMap((module) => module.lessons);
+
+  return lessons.map((lesson) => {
+    return {
+      id: lesson.id,
+      columnId: lesson.module,
+      content: lesson.title,
+      order: lesson.order,
+    };
+  });
+}
+
+const KanbanBoard: FC<{ modules: ModuleWithAllRelations[], setUpdatet: any }> = ({ modules, setUpdatet }) => {
+  const [columns, setColumns] = useState<Column[]>(getColumnsFromModules(modules))
+  const context = useContext(ColumnsAndTasksContext);
+
   const pickedUpTaskColumn = useRef<ColumnId | null>(null);
-  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
+  const [tasks, setTasks] = useState<Task[]>(getTasksFromModules(modules));
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
@@ -102,6 +78,12 @@ export function KanbanBoard() {
       column,
     };
   }
+
+  useEffect(() => {
+    context?.setColumns(columns);
+    context?.setTasks(tasks);
+  }, [columns, tasks])
+
 
   const announcements: Announcements = {
     onDragStart({ active }) {
@@ -154,12 +136,13 @@ export function KanbanBoard() {
         pickedUpTaskColumn.current = null;
         return;
       }
+
       if (
         active.data.current?.type === "Column" &&
         over.data.current?.type === "Column"
       ) {
         const overColumnPosition = columnsId.findIndex((id) => id === over.id);
-
+        setUpdatet();
         return `Column ${active.data.current.column.title
           } was dropped into position ${overColumnPosition + 1} of ${columnsId.length
           }`;
@@ -171,6 +154,7 @@ export function KanbanBoard() {
           over.id,
           over.data.current.task.columnId
         );
+        setUpdatet();
         if (over.data.current.task.columnId !== pickedUpTaskColumn.current) {
           return `Task was dropped into column ${column?.title} in position ${taskPosition + 1
             } of ${tasksInColumn.length}`;
@@ -245,6 +229,7 @@ export function KanbanBoard() {
   function onDragEnd(event: DragEndEvent) {
     setActiveColumn(null);
     setActiveTask(null);
+
 
     const { active, over } = event;
     if (!over) return;
@@ -325,3 +310,5 @@ export function KanbanBoard() {
     }
   }
 }
+
+export default KanbanBoard;

@@ -64,11 +64,8 @@ export const organizationCourseRelations = relations(organization, ({ many }) =>
 export const module = pgTable('Module', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
-  description: text('description').notNull(),
   course: uuid('course').references((): AnyPgColumn => course.id).notNull(),
   order: integer('order').notNull(),
-  status: varchar('status').notNull(),
-  allowPreview: boolean('allowPreview').default(false).notNull(),
   organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
@@ -100,11 +97,11 @@ export const lesson = pgTable('Lesson', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
-  module: uuid('module').references((): AnyPgColumn => module.id),
+  module: uuid('module').references((): AnyPgColumn => module.id, { onDelete: "cascade" }),
   order: integer('order'),
-  status: text('status'),
+  status: text('status').default('inactive'),
   allowPreview: boolean('allowPreview').default(false),
-  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const lessonOrganizationRelations = relations(lesson, ({ one }) => ({
@@ -131,11 +128,11 @@ export const moduleLessonRelations = relations(module, ({ many }) => ({
 
 export const courseContent = pgTable('CourseContent', {
   id: uuid('id').defaultRandom().primaryKey(),
-  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id),
+  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id, { onDelete: "cascade" }),
   order: integer('order'),
   lectureType: text('lectureType'),
   lectureConfig: json('lectureConfig'),
-  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const courseContentOrganizationRelations = relations(courseContent, ({ one }) => ({
@@ -166,10 +163,10 @@ export const lessonCourseContentRelations = relations(lesson, ({ many }) => ({
 export const question = pgTable('Question', {
   id: uuid('id').defaultRandom().primaryKey(),
   text: text('text'),
-  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id),
-  user: uuid('user').references((): AnyPgColumn => user.id),
+  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id, { onDelete: "cascade" }),
+  user: uuid('user').references((): AnyPgColumn => user.id, { onDelete: "cascade" }),
   createdAt: timestamp('createdAt', { mode: "string" }).defaultNow(),
-  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const questiontOrganizationRelations = relations(question, ({ one }) => ({
@@ -208,10 +205,10 @@ export const userQuestionRelations = relations(user, ({ many }) => ({
 export const answer = pgTable('Answer', {
   id: uuid('id').defaultRandom().primaryKey(),
   text: text('text'),
-  question: uuid('question').references((): AnyPgColumn => question.id),
+  question: uuid('question').references((): AnyPgColumn => question.id, { onDelete: "cascade" }),
   user: uuid('user').references((): AnyPgColumn => user.id),
   createdAt: timestamp('createdAt', { mode: "string" }).defaultNow(),
-  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const answerOrganizationRelations = relations(answer, ({ one }) => ({
@@ -251,9 +248,9 @@ export const invoice = pgTable('Invoice', {
   id: uuid('id').defaultRandom().primaryKey(),
   amount: integer('text'),
   date: timestamp('date', { mode: "string" }).defaultNow(),
-  user: uuid('user').references((): AnyPgColumn => user.id),
-  course: uuid('course').references((): AnyPgColumn => course.id),
-  organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
+  user: uuid('user').references((): AnyPgColumn => user.id, { onDelete: "cascade" }),
+  course: uuid('course').references((): AnyPgColumn => course.id, { onDelete: "cascade" }),
+  organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const insvoiceOrganizationRelations = relations(invoice, ({ one }) => ({

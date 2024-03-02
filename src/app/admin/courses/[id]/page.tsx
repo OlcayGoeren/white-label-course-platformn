@@ -1,5 +1,5 @@
 "use client"
-import { FC, useEffect, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
@@ -8,19 +8,22 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ExternalLink, Plus } from "lucide-react"
-import { KanbanBoard } from "@/components/kanban/KanbanBoard"
-import { useGetCourses } from "../../../../../hooks/getCourses"
+import { useGetAllCourseDetails } from "../../../../../hooks/getAllCourseDetails"
+import KanbanBoard from "@/components/kanban/KanbanBoard"
+import { CreateCourseForm, CreateModuleForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
+import { Column } from "@/components/kanban/BoardColumn"
+import { Task } from "@/components/kanban/TaskCard"
+import { ColumnsAndTasksContext } from "@/context/columnsTasks.context"
 
 
 const SingleCourseAdmin: FC = () => {
-    const { data, error } = useGetCourses();
+
+    const [columns, setColumns] = useState<Column[]>([])
+    const [tasks, setTasks] = useState<Task[]>([])
     const params = useParams<{ id: string }>()
+    const { data, dataUpdatedAt } = useGetAllCourseDetails(params.id);
 
-    // Kurs daten entsprechend rendern und anzeigen
-    // lesson mit drauf packen
-    const course = data?.courses.find((course) => course.id === params.id)
-
-
+    const [updatet, setUpdatet] = useState(false);
 
     const searchParams = useSearchParams()
 
@@ -30,52 +33,91 @@ const SingleCourseAdmin: FC = () => {
 
     useEffect(() => {
         searchTerms === "course" && setFirst("course")
-
         searchTerms === "settings" && setFirst("settings")
-
         searchTerms === "participants" && setFirst("participants")
-
     }, [searchTerms])
 
+    // useEffect(() => {
+    //     console.log("wie oft", dataUpdatedAt)
+    // }, [data])
+
+    useEffect(() => {
+        console.log(columns)
+        console.log(tasks);
+    }, [columns, tasks])
 
 
-    if (!course) {
-        return <div>Course not found</div>
+    function showChangeButton() {
+        setUpdatet(true)
     }
 
-    return <div className="flex flex-col gap-3">
-        <div className="flex flex-row gap-3">
-            <img width={350} height={150} src={"https://via.placeholder.com/350x150"} alt={"random"} />
-            <div className="flex flex-col  justify-between">
-                <Headline variant="h1" color="black">
-                    Beginner: JavaScript
-                </Headline>
+    const memoKanban = useMemo(() => {
+        return <KanbanBoard setUpdatet={showChangeButton} key={Date.now()} modules={data?.modulesWithRelations ?? []} />
+    }, [data?.modulesWithRelations])
 
-                <div className="flex flex-row gap-3">
-                    <Link className={cn("text-xl text-gray-700 font-medium", (first === "course" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=course"}>Kurs</Link>
-                    <Link className={cn("text-xl text-gray-700 font-medium", (first === "settings" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=settings"}>Einstellungen</Link>
-                    <Link className={cn("text-xl text-gray-700 font-medium", (first === "participants" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=participants"}>Teilnehmer</Link>
+
+    function updateOrder() {
+        setUpdatet(false)
+        // ALsooo:
+
+        // updateModulesAndLessonsOrder:
+
+        // --->
+
+        // {
+        //     moduleId: string,
+        //     modules: [richtige order],
+        //     tasks: [groupBy ColumnId, dann entsprechend des indexes der einzelnen Arrays die Orders richtig setzen]
+
+        // }
+    }
+
+
+    if (!data) return <div>Loading...</div>
+
+
+    return <ColumnsAndTasksContext.Provider value={{ columns, setColumns, setTasks, tasks }}>
+        <div className="flex flex-col gap-3">
+            <div className="flex flex-row gap-3">
+                <img width={350} height={150} src={"https://via.placeholder.com/350x150"} alt={"random"} />
+                <div className="flex flex-col  justify-between">
+                    <Headline variant="h1" color="black">
+                        Beginner: JavaScript
+                    </Headline>
+
+                    <div className="flex flex-row gap-3">
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "course" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=course"}>Kurs</Link>
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "settings" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=settings"}>Einstellungen</Link>
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "participants" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=participants"}>Teilnehmer</Link>
+                    </div>
+
                 </div>
-
             </div>
+
+            <div className="flex flex-row gap-3">
+                <Button className="" variant={"outline"}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Preview
+                </Button>
+
+                <DrawerDialog
+                    title="Modul hinzufügen"
+                    subTitle="Hier können Sie ein neues Modul hinzufügen"
+                    trigger={<Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Modul Hinzufügen
+                    </Button>}>
+                    <CreateModuleForm modules={data.modulesWithRelations ?? []} />
+                </DrawerDialog>
+                {updatet && <Button onClick={updateOrder} variant={"destructive"}>Reihenfolge aktualisieren</Button>}
+            </div>
+
+            <div className="">
+                {memoKanban}
+            </div>
+
         </div>
-
-        <div className="flex flex-row gap-3">
-            <Button className="" variant={"outline"}>
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Preview</Button>
-            <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Modul Hinzufügen
-            </Button>
-        </div>
-
-        <div className="">
-            <KanbanBoard />
-
-        </div>
-
-    </div>
+    </ColumnsAndTasksContext.Provider>
 }
 
 

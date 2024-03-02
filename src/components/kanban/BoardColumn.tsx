@@ -1,6 +1,6 @@
 "use client"
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { useDndContext, type UniqueIdentifier } from "@dnd-kit/core";
+import { type UniqueIdentifier } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 import { Task, TaskCard } from "./TaskCard";
@@ -8,10 +8,9 @@ import { cva } from "class-variance-authority";
 import { GripVertical } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { DrawerDialogDemo } from "@/app/admin/courses/page";
 import InputLabel from "../self/InputLabel";
 import { useForm } from "react-hook-form";
+import { CreateLessonForm, DrawerDialog, RemoveModuleForm } from "../self/DrawerDialogForm";
 
 export interface Column {
   id: UniqueIdentifier;
@@ -32,8 +31,6 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
-
-
   const { register, handleSubmit, formState: { errors } } = useForm<{ title: string }>();
 
   const tasksIds = useMemo(() => {
@@ -88,17 +85,32 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
         dragging: isOverlay ? "overlay" : isDragging ? "over" : undefined,
       })}
     >
-      <CardHeader className="p-4 font-semibold border-b-2 flex flex-row items-center  ">
-        <Button
-          variant={"ghost"}
-          {...attributes}
-          {...listeners}
-          className=" p-1 text-primary/50 -ml-2 h-auto cursor-grab relative"
-        >
-          <span className="sr-only">{`Move column: ${column.title}`}</span>
-          <GripVertical />
-        </Button>
-        <span className=""> {column.title}</span>
+      <CardHeader className="p-4 font-semibold border-b-2 flex flex-row items-center  justify-between">
+        <div className="flex flex-row items-center">
+          <Button
+            variant={"ghost"}
+            {...attributes}
+            {...listeners}
+            className=" p-1 text-primary/50 -ml-2 h-auto cursor-grab relative"
+          >
+            <span className="sr-only">{`Move column: ${column.title}`}</span>
+            <GripVertical />
+          </Button>
+          <span className=""> {column.title}</span>
+        </div>
+
+        <DrawerDialog
+          title="Spalte entfernen"
+          subTitle="Sind Sie sicher, dass Sie die Spalte entfernen möchten? Alle darunter liegenden Inhalte werden ebenfalls entfernt."
+          trigger={<Button
+
+            variant={"destructiveGhost"}>Entfernen</Button>}>
+
+          <RemoveModuleForm moduleId={column.id as string} />
+
+        </DrawerDialog>
+
+
       </CardHeader>
 
       <CardContent className="flex flex-grow flex-col gap-2 p-2">
@@ -110,24 +122,15 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
       </CardContent>
 
       <CardFooter className="pb-2 flex justify-center">
-        <DrawerDialogDemo
-          trigger={<Button>Inhalt hinzufügen</Button>}
-          title="Inhalt hinzufügen"
-          subTitle="Den Titel können Sie im nachinein jederzeit ändern"
+        <DrawerDialog
+          title="Lektion hinzufügen"
+          subTitle="Erstellen Sie eine neue Lektion."
+          trigger={<Button>Lektion hinzufügen</Button>}
         >
-          <form
-            className="grid items-start gap-4"
-            onSubmit={handleSubmit(createSubModule)}>
-            <InputLabel
-              label="Titel"
-              register={register}
-              id="title"
-              type="text"
-              errors={errors} />
-            <Button type="submit">Jetzt erstellen</Button>
-          </form>
-        </DrawerDialogDemo>
-
+          <CreateLessonForm moduleId={column.id as string} totalTaskCount={tasks.reduce((maxOrder, task) => {
+            return Math.max(maxOrder, task.order);
+          }, 0) + 1} />
+        </DrawerDialog>
       </CardFooter>
     </Card>
   );

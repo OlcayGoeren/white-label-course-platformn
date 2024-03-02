@@ -25,3 +25,8 @@ export type CourseSchema = z.infer<typeof CourseZodSchema>;
 
 export type CourseStatus = "active" | "inactive";
 export const courseTableStatuses: CourseStatus[] = ["active", "inactive",];
+
+
+export interface CourseWithAllRelations extends CourseSchema {
+    // module: ModuleSchema[];
+}

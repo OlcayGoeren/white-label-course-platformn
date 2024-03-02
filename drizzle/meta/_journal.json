@@ -36,6 +36,20 @@
       "when": 1709314670967,
       "tag": "0004_spooky_gertrude_yorkes",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1709376782176,
+      "tag": "0005_bumpy_imperial_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1709379449749,
+      "tag": "0006_regular_red_wolf",
+      "breakpoints": true
     }
   ]
 }
