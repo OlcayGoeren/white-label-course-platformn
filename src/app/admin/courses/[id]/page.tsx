@@ -14,10 +14,13 @@ import { CreateCourseForm, CreateModuleForm, DrawerDialog } from "@/components/s
 import { Column } from "@/components/kanban/BoardColumn"
 import { Task } from "@/components/kanban/TaskCard"
 import { ColumnsAndTasksContext } from "@/context/columnsTasks.context"
+import _ from "lodash"
+import { LessonSchemaForm } from "@/types/lessons"
+import { useUpdateCourseOrder } from "../../../../../hooks/updateCourseOrder"
 
 
 const SingleCourseAdmin: FC = () => {
-
+    const updateCourseOrder = useUpdateCourseOrder();
     const [columns, setColumns] = useState<Column[]>([])
     const [tasks, setTasks] = useState<Task[]>([])
     const params = useParams<{ id: string }>()
@@ -37,10 +40,6 @@ const SingleCourseAdmin: FC = () => {
         searchTerms === "participants" && setFirst("participants")
     }, [searchTerms])
 
-    // useEffect(() => {
-    //     console.log("wie oft", dataUpdatedAt)
-    // }, [data])
-
     useEffect(() => {
         console.log(columns)
         console.log(tasks);
@@ -58,18 +57,34 @@ const SingleCourseAdmin: FC = () => {
 
     function updateOrder() {
         setUpdatet(false)
-        // ALsooo:
 
-        // updateModulesAndLessonsOrder:
+        const courseId = params.id;
+        const modules = columns.map((col, index) => {
+            return {
+                id: String(col.id),
+                order: index,
+                organization: col.organization
+            }
+        });
+        const lessons: any = tasks.map(task => task.id);
+        const groupedLessons = _.groupBy(tasks, "columnId");
 
-        // --->
+        Object.keys(groupedLessons).forEach((columnId, groupIndex) => {
+            groupedLessons[columnId].forEach((task, index) => {
+                lessons.push({
+                    id: task.id,
+                    order: index,
+                    columnId: task.columnId,
+                    organization: task.organization
+                })
+            });
+        });
 
-        // {
-        //     moduleId: string,
-        //     modules: [richtige order],
-        //     tasks: [groupBy ColumnId, dann entsprechend des indexes der einzelnen Arrays die Orders richtig setzen]
-
-        // }
+        updateCourseOrder.mutate({
+            courseId: courseId,
+            lessons: lessons,
+            modules: modules
+        })
     }
 
 

@@ -27,11 +27,12 @@ import { ColumnsAndTasksContext } from "@/context/columnsTasks.context";
 
 export type ColumnId = string;
 
-function getColumnsFromModules(modules: ModuleWithAllRelations[]) {
+function getColumnsFromModules(modules: ModuleWithAllRelations[]): Column[] {
   return modules.map((module) => {
     return {
       id: module.id,
       title: module.title,
+      organization: module.organization,
     };
   });
 }
@@ -46,6 +47,7 @@ function getTasksFromModules(modules: ModuleWithAllRelations[]): Task[] {
       columnId: lesson.module,
       content: lesson.title,
       order: lesson.order,
+      organization: lesson.organization,
     };
   });
 }

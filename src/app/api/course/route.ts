@@ -1,10 +1,11 @@
-import { CourseSchemaForm, CourseZodSchemaForm } from "@/types/courses";
+import { CourseZodSchemaForm } from "@/types/courses";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
-import { course } from "../../../../db/schema";
-import { z } from "zod";
+import { course, lesson, module as moduleSchema } from "../../../../db/schema";
+import { UpdateCourseOrder } from "../../../../hooks/updateCourseOrder";
+import { eq } from "drizzle-orm";
 
 export async function GET(request: Request) {
     try {
@@ -52,6 +53,22 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+        const body = await request.json() as UpdateCourseOrder;
+
+        body.modules.forEach(async (moduleEle) => {
+            const result = await db.update(moduleSchema)
+                .set({ order: moduleEle.order })
+                .where(eq(moduleSchema.id, moduleEle.id)).returning(({ updatedId: moduleSchema.id }));
+        });
+        body.lessons.forEach(async (lessonsEle) => {
+            const result = await db.update(lesson)
+                .set({ order: lessonsEle.order })
+                .where(eq(lesson.id, lessonsEle.id));
+        });
         return NextResponse.json({ success: true }, { status: 200 })
     } catch (error) {
         console.error(error);

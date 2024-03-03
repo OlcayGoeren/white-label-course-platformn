@@ -23,6 +23,7 @@ export async function GET(request: Request,
 
         const modules = await db.query.module.findMany({
             where: (module, { eq }) => and(eq(module.course, course?.id ?? ""), eq(module.organization, session.user.organization)),
+            orderBy: (module, { asc }) => [asc(module.order)],
         })
 
         if (modules.length === 0) return NextResponse.json({ success: false, message: "No modules found" }, { status: 404 });
@@ -31,14 +32,15 @@ export async function GET(request: Request,
         const lessons = await db.query.lesson.findMany({
             where: (lesson, { eq, inArray }) => and(
                 modules.length > 0 ? inArray(lesson.module, modules.map((module) => module.id)) : undefined
-                , eq(lesson.organization, session.user.organization))
+                , eq(lesson.organization, session.user.organization)),
+            orderBy: (lesson, { asc }) => [asc(lesson.order)],
         })
 
 
         const courseContents = await db.query.courseContent.findMany({
             where: (courseContent, { eq, inArray }) => and(
-
-                lessons.length > 0 ? inArray(courseContent.lesson, lessons.map((lesson) => lesson.id)) : undefined, eq(courseContent.organization, session.user.organization))
+                lessons.length > 0 ? inArray(courseContent.lesson, lessons.map((lesson) => lesson.id)) : undefined, eq(courseContent.organization, session.user.organization)),
+            orderBy: (courseContent, { asc }) => [asc(courseContent.order)],
         })
 
         const modulesWithRelations: ModuleWithAllRelations[] = modules.map((module) => {

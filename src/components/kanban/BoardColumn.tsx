@@ -15,6 +15,7 @@ import { CreateLessonForm, DrawerDialog, RemoveModuleForm } from "../self/Drawer
 export interface Column {
   id: UniqueIdentifier;
   title: string;
+  organization: string;
 }
 
 export type ColumnType = "Column";
