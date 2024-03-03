@@ -23,6 +23,8 @@ import { addMinutes } from "date-fns";
 import sha256 from 'crypto-js/sha256'
 import * as tus from 'tus-js-client'
 import { Progress } from "../ui/progress";
+import { useCreateCourseContent } from "../../../hooks/createCourseContent";
+import { useParams } from "next/navigation";
 
 interface DrawerDialogProps {
     title: string;
@@ -194,7 +196,6 @@ export const RemoveModuleForm: FC<{ moduleId: string }> = ({ moduleId }) => {
 }
 
 export const CreateLessonForm: FC<{ moduleId: string, totalTaskCount: number }> = ({ moduleId, totalTaskCount }) => {
-
     const createLesson = useCreateLesson();
     const { open, setOpen } = useDrawer();
 
@@ -233,7 +234,8 @@ export const CreateLessonForm: FC<{ moduleId: string, totalTaskCount: number }> 
     )
 }
 
-export const CreateVideoForm: FC<{ file: File | null }> = ({ file }) => {
+export const CreateVideoForm: FC<{ file: File | null, lessonId: string }> = ({ file, lessonId }) => {
+    const createCourseContent = useCreateCourseContent();
     const [uploadPercent, setUploadPercent] = useState(0);
     const createVideo = useCreateVideo();
     const { open, setOpen } = useDrawer();
@@ -269,7 +271,16 @@ export const CreateVideoForm: FC<{ file: File | null }> = ({ file }) => {
                         setUploadPercent(((bytesUploaded / bytesTotal) * 100))
                     },
                     onSuccess: function () {
-                        alert("Upload finished")
+                        createCourseContent.mutate({
+                            lesson: lessonId,
+                            lectureType: "video",
+                            lectureConfig: {
+                                id: createVideo.data.guid
+                            }
+                        })
+                        // learncontent erstellen und entsprechend verlinken
+                        // lösch Logik einbauen
+                        // media player einbinden siehe https://iframe.mediadelivery.net/embed/${videolibraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=false
                         // getAllVideos({ collectionId: collectionId, libraryId: libraryId });
                     }
                 })

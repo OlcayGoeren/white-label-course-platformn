@@ -40,7 +40,6 @@ export async function GET(request: Request,
         const courseContents = await db.query.courseContent.findMany({
             where: (courseContent, { eq, inArray }) => and(
                 lessons.length > 0 ? inArray(courseContent.lesson, lessons.map((lesson) => lesson.id)) : undefined, eq(courseContent.organization, session.user.organization)),
-            orderBy: (courseContent, { asc }) => [asc(courseContent.order)],
         })
 
         const modulesWithRelations: ModuleWithAllRelations[] = modules.map((module) => {

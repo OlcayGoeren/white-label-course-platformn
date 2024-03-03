@@ -21,6 +21,30 @@ import { useForm } from "react-hook-form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Dropzone from "@/components/ui/dropzone"
 import { useCreateVideo } from "../../../../../../hooks/createVideo"
+import { lesson } from "../../../../../../db/schema"
+import { VideoConfigSchema, videoConfigSchema } from "@/types/courseContent"
+import EditorConvertToHTML from "@/components/self/EditorConvertToHTML"
+
+
+
+const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
+
+    // @ts-ignore
+    const videoConfig: VideoConfigSchema = lesson.courseContents[0].lectureConfig;
+
+    return <>
+        < p > Edit Board</p>
+        <iframe className="" allowFullScreen src={`https://iframe.mediadelivery.net/embed/140551/${(videoConfig.id)}?autoplay=false&loop=false&muted=false&preload=false`} />
+        <DrawerDialog
+            title="Video ändern"
+            subTitle="Das alte Video wird entfernt und das neue hinzugefügt. Sind sie sich sicher?"
+            trigger={<Button>Video ändern</Button>}
+        >
+            <></>
+        </DrawerDialog>
+        <EditorConvertToHTML />
+    </>
+}
 
 
 const SingleCourseAdmin: FC = () => {
@@ -62,20 +86,20 @@ const SingleCourseAdmin: FC = () => {
 
     function handleOnDrop(acceptedFiles: FileList | null) {
         if (acceptedFiles && acceptedFiles.length > 0) {
-            const allowedTypes = [
-                { name: "csv", types: ["text/csv"] },
-                {
-                    name: "excel",
-                    types: [
-                        "application/vnd.ms-excel",
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    ],
-                },
-            ];
-            const fileType = allowedTypes.find((allowedType) =>
-                allowedType.types.find((type) => type === acceptedFiles[0].type)
-            );
             methods.setValue("file", acceptedFiles[0]);
+            // const allowedTypes = [
+            //     { name: "csv", types: ["text/csv"] },
+            //     {
+            //         name: "excel",
+            //         types: [
+            //             "application/vnd.ms-excel",
+            //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            //         ],
+            //     },
+            // ];
+            // const fileType = allowedTypes.find((allowedType) =>
+            //     allowedType.types.find((type) => type === acceptedFiles[0].type)
+            // );
             // );
             // if (!fileType) {
             //     methods.setValue("file", null);
@@ -86,9 +110,6 @@ const SingleCourseAdmin: FC = () => {
             // } else {
             //     methods.setValue("file", acceptedFiles[0]);
             //     methods.clearErrors("file");
-
-
-
             // }
         } else {
             methods.setValue("file", null);
@@ -114,7 +135,11 @@ const SingleCourseAdmin: FC = () => {
     }
 
 
-
+    // TODO: 
+    // Dropdown im Edit Board anzeigen
+    // Im Frontend Logik einbauen, dass man nur gleichzeitig einen Content hat. Beim Speichern nach dem Switchen Verweis
+    // geben, dass alte Inhalt entfernt wird.
+    // Bei video switch sicher gehen, dass video von bunny entfernt wird
 
     return <>
         <div className="flex flex-row items-start justify-between">
@@ -143,33 +168,39 @@ const SingleCourseAdmin: FC = () => {
         </div>
 
 
-        <div className="grid grid-cols-1">
-            <Select >
-                <SelectTrigger className="w-[120px]" >
-                    <SelectValue placeholder={"Auswählen"} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectItem value={"Bla"}>Video</SelectItem>
-                        <SelectItem value={"Bfela"}>Rich-Text</SelectItem>
-                        <SelectItem value={"Bewffewla"}></SelectItem>
-                        <SelectItem value={"Blweffwea"}>Bla</SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </div>
+        {lessonFound.courseContents.length > 0 ? <VideoEditBoard lesson={lessonFound} />
+            : <>
+                <div className="grid grid-cols-1">
+                    <Select >
+                        <SelectTrigger className="w-[120px]" >
+                            <SelectValue placeholder={"Auswählen"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value={"Bla"}>Video</SelectItem>
+                                <SelectItem value={"Bfela"}>Rich-Text</SelectItem>
+                                <SelectItem value={"Bewffewla"}></SelectItem>
+                                <SelectItem value={"Blweffwea"}>Bla</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-        <Dropzone
-            classNameWrapper="w-[20vw] h-[20vh]"
-            dropMessage="Drop files or click here"
-            handleOnDrop={handleOnDrop}
-        />
+                <Dropzone
+                    classNameWrapper="w-[20vw] h-[20vh]"
+                    dropMessage="Drop files or click here"
+                    handleOnDrop={handleOnDrop}
+                />
 
-        <DrawerDialog openParent={openDrawer} setOpenParent={setOpenDrawer} title="Video hochladen" subTitle="Bitte geben Sie einen Titel ein"
-            trigger={<> </>}
-        >
-            <CreateVideoForm file={methods.watch("file")} />
-        </DrawerDialog>
+                <DrawerDialog openParent={openDrawer} setOpenParent={setOpenDrawer} title="Video hochladen" subTitle="Bitte geben Sie einen Titel ein"
+                    trigger={<> </>}
+                >
+                    <CreateVideoForm lessonId={params.courseId} file={methods.watch("file")} />
+                </DrawerDialog>
+            </>
+        }
+
+
     </>
 }
 export default SingleCourseAdmin
