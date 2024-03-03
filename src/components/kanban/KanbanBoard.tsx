@@ -48,6 +48,7 @@ function getTasksFromModules(modules: ModuleWithAllRelations[]): Task[] {
       content: lesson.title,
       order: lesson.order,
       organization: lesson.organization,
+      status: lesson.status,
     };
   });
 }

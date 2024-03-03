@@ -7,6 +7,8 @@ import { cva } from "class-variance-authority";
 import { GripVertical } from "lucide-react";
 import { ColumnId } from "./KanbanBoard";
 import { Badge } from "../ui/badge";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { courseTableStatuses } from "@/types/courses";
 
 export interface Task {
   id: UniqueIdentifier;
@@ -14,6 +16,7 @@ export interface Task {
   content: string;
   order: number;
   organization: string;
+  status: string;
 }
 
 interface TaskCardProps {
@@ -83,7 +86,19 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           </Button>
           {task.content}
         </div>
-        <div className="">Selector</div>
+        <div className="">
+          <Select value={task.status}>
+            <SelectTrigger className="w-[120px]" >
+              <SelectValue placeholder={task.status} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {courseTableStatuses.map((status) => <SelectItem value={status}>{status}</SelectItem>)}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+        </div>
       </CardContent>
     </Card>
   );

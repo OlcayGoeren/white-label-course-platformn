@@ -75,7 +75,8 @@ const SingleCourseAdmin: FC = () => {
                     id: task.id,
                     order: index,
                     columnId: task.columnId,
-                    organization: task.organization
+                    organization: task.organization,
+                    module: task.columnId
                 })
             });
         });

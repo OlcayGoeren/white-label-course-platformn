@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
         });
         body.lessons.forEach(async (lessonsEle) => {
             const result = await db.update(lesson)
-                .set({ order: lessonsEle.order })
+                .set({ order: lessonsEle.order, module: lessonsEle.module })
                 .where(eq(lesson.id, lessonsEle.id));
         });
         return NextResponse.json({ success: true }, { status: 200 })

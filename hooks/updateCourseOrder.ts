@@ -20,6 +20,7 @@ export interface UpdateCourseOrder {
         id: string;
         order: number;
         organization: string;
+        module:string;
     }[]
 }
 
