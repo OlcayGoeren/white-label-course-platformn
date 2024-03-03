@@ -1,3 +1,4 @@
+"use client"
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -9,6 +10,8 @@ import { ColumnId } from "./KanbanBoard";
 import { Badge } from "../ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { courseTableStatuses } from "@/types/courses";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export interface Task {
   id: UniqueIdentifier;
@@ -32,6 +35,9 @@ export interface TaskDragData {
 }
 
 export function TaskCard({ task, isOverlay }: TaskCardProps) {
+
+  const params = useParams<{ id: string }>();
+
   const {
     setNodeRef,
     attributes,
@@ -84,7 +90,8 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
             <span className="sr-only">Move task</span>
             <GripVertical />
           </Button>
-          {task.content}
+          <Link className="hover:underline" href={"/admin/courses/" + params.id + "/" + task.id}>{task.content}</Link>
+
         </div>
         <div className="">
           <Select value={task.status}>
