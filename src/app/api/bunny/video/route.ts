@@ -28,8 +28,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const body = await request.json() as CreateVideoRequest;
-
 
         const url = 'https://video.bunnycdn.com/library/140551/videos';
         const headers = {
@@ -38,10 +36,7 @@ export async function POST(request: NextRequest) {
             AccessKey: 'cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a'
         }
 
-        const result = await axios.post(url, {
-            title: body.title,
-            // collectionId: session.user.organization
-        }, { headers })
+        const result = await axios.post(url, null, { headers })
 
         return NextResponse.json({ ...result.data }, { status: 200 })
     } catch (error) {

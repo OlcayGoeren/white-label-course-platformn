@@ -60,8 +60,6 @@ const SingleCourseAdmin: FC = () => {
         shouldUseNativeValidation: false,
     });
 
-
-
     const router = useRouter();
     const params = useParams<{ id: string, courseId: string }>();
     const { data } = useGetAllCourseDetails(params.id);
@@ -87,30 +85,6 @@ const SingleCourseAdmin: FC = () => {
     function handleOnDrop(acceptedFiles: FileList | null) {
         if (acceptedFiles && acceptedFiles.length > 0) {
             methods.setValue("file", acceptedFiles[0]);
-            // const allowedTypes = [
-            //     { name: "csv", types: ["text/csv"] },
-            //     {
-            //         name: "excel",
-            //         types: [
-            //             "application/vnd.ms-excel",
-            //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            //         ],
-            //     },
-            // ];
-            // const fileType = allowedTypes.find((allowedType) =>
-            //     allowedType.types.find((type) => type === acceptedFiles[0].type)
-            // );
-            // );
-            // if (!fileType) {
-            //     methods.setValue("file", null);
-            //     methods.setError("file", {
-            //         message: "File type is not valid",
-            //         type: "typeError",
-            //     });
-            // } else {
-            //     methods.setValue("file", acceptedFiles[0]);
-            //     methods.clearErrors("file");
-            // }
         } else {
             methods.setValue("file", null);
             methods.setError("file", {

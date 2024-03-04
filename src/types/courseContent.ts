@@ -38,6 +38,15 @@ export const CourseContentZodSchema = z.object({
 
 export type CourseContentchema = z.infer<typeof CourseContentZodSchema>;
 
+export const CourseContentZodSchemaUpdateVideo = z.object({
+    id: z.string(),
+    lesson: z.string().min(4),
+    lectureType: lectureTypeSchema,
+    lectureConfig: videoConfigSchema
+});
+
+export type CourseContentZodSchemaUpdateVideo = z.infer<typeof CourseContentZodSchemaUpdateVideo>;
+
 
 export interface CourseContentWithAllRelations extends CourseContentchema {
     // module: ModuleSchema[];

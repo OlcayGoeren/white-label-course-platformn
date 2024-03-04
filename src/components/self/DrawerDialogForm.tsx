@@ -25,6 +25,7 @@ import * as tus from 'tus-js-client'
 import { Progress } from "../ui/progress";
 import { useCreateCourseContent } from "../../../hooks/createCourseContent";
 import { useParams } from "next/navigation";
+import Dropzone from "../ui/dropzone";
 
 interface DrawerDialogProps {
     title: string;
@@ -308,6 +309,105 @@ export const CreateVideoForm: FC<{ file: File | null, lessonId: string }> = ({ f
         <form onSubmit={handleSubmit(submitNow)} className={cn("grid items-start gap-4")}>
             <div className="grid gap-2">
                 <InputLabel register={register} id="title" label="Titel" type="text" errors={errors} />
+                {uploadPercent > 0 && <Progress value={uploadPercent} />}
+            </div>
+            <Button disabled={uploadPercent != 0} type="submit">Jetzt Hochladen</Button>
+        </form>
+    )
+}
+
+export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
+    const createCourseContent = useCreateCourseContent();
+    const [uploadPercent, setUploadPercent] = useState(0);
+    const createVideo = useCreateVideo();
+
+    const { register, setValue, handleSubmit, formState: { errors } } = useForm<{ title: string }>()
+
+
+    const methods = useForm({
+        shouldFocusError: true,
+        shouldUnregister: false,
+        shouldUseNativeValidation: false,
+    });
+
+    useEffect(() => {
+        if (createVideo.status === "success") {
+            const file = methods.getValues("file") as File;
+            const signatureExpire = addMinutes(new Date(), 10).getTime()
+            const shaed = sha256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
+            if (file) {
+
+
+                var upload = new tus.Upload(file, {
+                    endpoint: "https://video.bunnycdn.com/tusupload",
+                    retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
+                    headers: {
+                        AuthorizationSignature: shaed, // SHA256 signature (library_id + api_key + expiration_time + video_id)
+                        AuthorizationExpire: signatureExpire.toString(), // Expiration time as in the signature,
+                        VideoId: createVideo.data.guid, // The guid of a previously created video object through the Create Video API call
+                        LibraryId: "140551",
+                    },
+                    metadata: {
+                        filetype: file?.type,
+                        title: file?.name
+                    },
+                    onError: function (error) {
+                        console.log(error)
+                    },
+                    onProgress: function (bytesUploaded, bytesTotal) {
+                        setUploadPercent(((bytesUploaded / bytesTotal) * 100))
+                    },
+                    onSuccess: function () {
+                        createCourseContent.mutate({
+                            lesson: lessonId,
+                            lectureType: "video",
+                            lectureConfig: {
+                                id: createVideo.data.guid
+                            }
+                        })
+                        // learncontent erstellen und entsprechend verlinken
+                        // lösch Logik einbauen
+                        // media player einbinden siehe https://iframe.mediadelivery.net/embed/${videolibraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=false
+                        // getAllVideos({ collectionId: collectionId, libraryId: libraryId });
+                    }
+                })
+                // Check if there are any previous uploads to continue.
+                upload.findPreviousUploads().then(function (previousUploads) {
+                    // Found previous uploads so we select the first one. 
+                    if (previousUploads.length) {
+                        upload.resumeFromPreviousUpload(previousUploads[0])
+                    }
+
+                    // Start the upload
+                    upload.start()
+                })
+            }
+
+        }
+    }, [createVideo.status])
+
+
+    async function submitNow(data: { title: string }) {
+        createVideo.mutate(data);
+    }
+
+    function handleOnDrop(acceptedFiles: FileList | null) {
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            methods.setValue("file", acceptedFiles[0]);
+        } else {
+            methods.setValue("file", null);
+            methods.setError("file", {
+                message: "File is required",
+                type: "typeError",
+            });
+        }
+    }
+
+    return (
+
+        <form onSubmit={handleSubmit(submitNow)} className={cn("grid items-start gap-4")}>
+            <div className="grid gap-2">
+                <Dropzone handleOnDrop={handleOnDrop} dropMessage="" />
                 {uploadPercent > 0 && <Progress value={uploadPercent} />}
             </div>
             <Button disabled={uploadPercent != 0} type="submit">Jetzt Hochladen</Button>
