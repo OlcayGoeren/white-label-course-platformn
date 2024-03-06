@@ -61,14 +61,14 @@ export interface VideoItem {
 }
 
 export interface CreateVideoRequest {
-    title: string
+
 }
 
 export const UPLOAD_VIDEO = ['UPLOAD_VIDEO'];
 
 export const createVideo = async (body: CreateVideoRequest): Promise<VideoItem> => {
     try {
-        const response = await axios.post('/api/bunny/video', body)
+        const response = await axios.post('/api/bunny/video', {})
         return response.data;
     } catch (error) {
         throw error;

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { ModuleSchemaForm } from '@/types/modules';
 import { GET_ALL_COURSE_DETAILS_KEY } from './getAllCourseDetails';
-import { CourseContentSchemaForm, CourseContentZodSchemaUpdateVideo, CourseContentchema } from '@/types/courseContent';
+import { CourseContentSchemaForm, CourseContentZodSchemaUpdate, CourseContentchema } from '@/types/courseContent';
 // import schema
 
 
@@ -12,9 +12,9 @@ interface ResponseData {
 
 
 
-export const UPDATE_COURSE_CONTENT_VIDEO = ['UPDATE_COURSE_CONTENT_VIDEO'];
+export const UPDATE_COURSE_CONTENT = ['UPDATE_COURSE_CONTENT'];
 
-export const updateCourseContentVideo = async (body: CourseContentZodSchemaUpdateVideo): Promise<ResponseData> => {
+export const updateCourseContent = async (body: CourseContentZodSchemaUpdate): Promise<ResponseData> => {
     try {
         const response = await axios.put("/api/courseContent", body);
         return response.data;
@@ -23,12 +23,12 @@ export const updateCourseContentVideo = async (body: CourseContentZodSchemaUpdat
     }
 };
 
-export const useUpdateCourseContentVideo = () => {
+export const useUpdateCourseContent = () => {
     const queryClient = useQueryClient();
-    return useMutation<ResponseData, Error, CourseContentZodSchemaUpdateVideo>(
+    return useMutation<ResponseData, Error, CourseContentZodSchemaUpdate>(
         {
-            mutationFn: updateCourseContentVideo,
-            mutationKey: UPDATE_COURSE_CONTENT_VIDEO,
+            mutationFn: updateCourseContent,
+            mutationKey: UPDATE_COURSE_CONTENT,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: GET_ALL_COURSE_DETAILS_KEY })
             }

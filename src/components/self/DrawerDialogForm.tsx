@@ -24,8 +24,12 @@ import sha256 from 'crypto-js/sha256'
 import * as tus from 'tus-js-client'
 import { Progress } from "../ui/progress";
 import { useCreateCourseContent } from "../../../hooks/createCourseContent";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Dropzone from "../ui/dropzone";
+import { useUpdateCourseContent } from "../../../hooks/updateCourseContentVideo";
+import axios from "axios";
+import { VideoConfigSchema } from "@/types/courseContent";
+import { useDeleteLesson } from "../../../hooks/deleteLesson";
 
 interface DrawerDialogProps {
     title: string;
@@ -250,8 +254,6 @@ export const CreateVideoForm: FC<{ file: File | null, lessonId: string }> = ({ f
             const signatureExpire = addMinutes(new Date(), 10).getTime()
             const shaed = sha256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
             if (file) {
-
-
                 var upload = new tus.Upload(file, {
                     endpoint: "https://video.bunnycdn.com/tusupload",
                     retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
@@ -316,10 +318,10 @@ export const CreateVideoForm: FC<{ file: File | null, lessonId: string }> = ({ f
     )
 }
 
-export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
-    const createCourseContent = useCreateCourseContent();
-    const [uploadPercent, setUploadPercent] = useState(0);
+export const UpdateVideoForm: FC<{ courseContentId: string, richText: string, videoId: string }> = ({ courseContentId, richText, videoId }) => {
     const createVideo = useCreateVideo();
+    const [uploadPercent, setUploadPercent] = useState(0);
+    const updateCourseContentVideo = useUpdateCourseContent();
 
     const { register, setValue, handleSubmit, formState: { errors } } = useForm<{ title: string }>()
 
@@ -336,8 +338,6 @@ export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
             const signatureExpire = addMinutes(new Date(), 10).getTime()
             const shaed = sha256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
             if (file) {
-
-
                 var upload = new tus.Upload(file, {
                     endpoint: "https://video.bunnycdn.com/tusupload",
                     retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
@@ -358,17 +358,15 @@ export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
                         setUploadPercent(((bytesUploaded / bytesTotal) * 100))
                     },
                     onSuccess: function () {
-                        createCourseContent.mutate({
-                            lesson: lessonId,
+                        // videoDelete.mutate({ videoId: videoId });
+                        updateCourseContentVideo.mutate({
+                            id: courseContentId,
                             lectureType: "video",
                             lectureConfig: {
-                                id: createVideo.data.guid
+                                id: createVideo.data.guid,
+                                richText: richText
                             }
                         })
-                        // learncontent erstellen und entsprechend verlinken
-                        // lösch Logik einbauen
-                        // media player einbinden siehe https://iframe.mediadelivery.net/embed/${videolibraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=false
-                        // getAllVideos({ collectionId: collectionId, libraryId: libraryId });
                     }
                 })
                 // Check if there are any previous uploads to continue.
@@ -386,9 +384,16 @@ export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
         }
     }, [createVideo.status])
 
+    useEffect(() => {
+        if (updateCourseContentVideo.status === "success") {
+            axios.delete(`/api/bunny/video/${videoId}`)
+        }
+    }, [updateCourseContentVideo])
 
-    async function submitNow(data: { title: string }) {
-        createVideo.mutate(data);
+
+
+    async function submitNow() {
+        createVideo.mutate({});
     }
 
     function handleOnDrop(acceptedFiles: FileList | null) {
@@ -404,13 +409,38 @@ export const UpdateVideoForm: FC<{ lessonId: string }> = ({ lessonId }) => {
     }
 
     return (
-
         <form onSubmit={handleSubmit(submitNow)} className={cn("grid items-start gap-4")}>
             <div className="grid gap-2">
-                <Dropzone handleOnDrop={handleOnDrop} dropMessage="" />
+                <Dropzone
+                    dropMessage="Drop files or click here"
+                    classNameWrapper="w-full h-[20vh]" handleOnDrop={handleOnDrop} />
                 {uploadPercent > 0 && <Progress value={uploadPercent} />}
             </div>
-            <Button disabled={uploadPercent != 0} type="submit">Jetzt Hochladen</Button>
+            <Button disabled={uploadPercent != 0} type="submit">Video Ändern</Button>
+        </form>
+    )
+}
+
+export const DeleteLernContentForm: FC<{ courseContentId: string, videoId: string }> = ({ courseContentId, videoId }) => {
+    const deleteLesson = useDeleteLesson();
+    const router = useRouter();
+    async function submitNow() {
+        if (videoId) {
+            axios.delete(`/api/bunny/video/${videoId}`)
+        }
+        deleteLesson.mutate({ id: courseContentId });
+        debugger;
+    }
+
+    useEffect(() => {
+        if (deleteLesson.status === "success")
+            router.back();
+    }, [deleteLesson.status])
+
+
+    return (
+        <form onSubmit={submitNow} className={cn("grid items-start gap-4")}>
+            <Button variant={"destructive"} type="submit">Lerninhalt löschen</Button>
         </form>
     )
 }

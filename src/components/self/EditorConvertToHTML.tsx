@@ -8,9 +8,21 @@ import { Button } from '../ui/button';
 
 
 
-const EditorConvertToHTML: FC = ({ }) => {
+const EditorConvertToHTML: FC<{ text: any, setText: any }> = ({ setText, text }) => {
+  // text hier überführen
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [text, setText] = useState("");
+
+
+  useEffect(() => {
+    const blocksFromHtml = htmlToDraft(text);
+
+    if (blocksFromHtml) {
+      const { contentBlocks, entityMap } = blocksFromHtml;
+      const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
+      const newEditorState = EditorState.createWithContent(contentState);
+      setEditorState(newEditorState);
+    }
+  }, []);
 
   const onEditorStateChange = (newEditorState: EditorState) => {
     setEditorState(newEditorState);
@@ -34,7 +46,6 @@ const EditorConvertToHTML: FC = ({ }) => {
         editorClassName="wrapper-editor"
         onEditorStateChange={onEditorStateChange}
       />}
-      <Button>Speichern</Button>
       {/* <div className='p-4 prose-lg rounded-lg mt-3 bg-base-200 w-1/2' dangerouslySetInnerHTML={{ __html: draftToHtml(convertToRaw(editorState.getCurrentContent())) }} /> */}
     </div>
   );

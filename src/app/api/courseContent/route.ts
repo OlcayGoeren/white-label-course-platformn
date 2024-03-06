@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { CourseContentZodSchema, CourseContentZodSchemaForm, CourseContentZodSchemaUpdateVideo, VideoConfigSchema, videoConfigSchema } from "@/types/courseContent";
+import { CourseContentZodSchema, CourseContentZodSchemaForm, CourseContentZodSchemaUpdate, VideoConfigSchema, videoConfigSchema } from "@/types/courseContent";
 import { db } from "../../../../db/access";
 import { courseContent } from "../../../../db/schema";
 import { and, eq } from "drizzle-orm";
@@ -52,24 +52,18 @@ export async function PUT(request: NextRequest) {
         if (!session) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
+
         const body = await request.json();
-        const parsedBody = CourseContentZodSchemaUpdateVideo.parse(body);
+        const parsedBody = CourseContentZodSchemaUpdate.parse(body);
+        // hier weiter
 
-        const coursecontent = await db.query.courseContent.findFirst({
-            where: and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization))
-        });
-
-
-        await db.update(courseContent)
-            .set({ lectureConfig: parsedBody.lectureConfig })
-            .where(and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization)));
-
-        const videoConfig = coursecontent?.lectureConfig as unknown as VideoConfigSchema;
-
-        const result = axios.delete("https://video.bunnycdn.com/library/140551/videos/" + videoConfig.id);
-
-        // Video gui erstellen und an clinet zurücksenden
-
+        const updatetRow = await db.update(courseContent)
+            .set({
+                lectureType: parsedBody.lectureType,
+                lectureConfig: parsedBody.lectureConfig
+            })
+            .where(and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization)))
+            .returning();
 
         return NextResponse.json({ success: true }, { status: 200 })
     } catch (error) {
