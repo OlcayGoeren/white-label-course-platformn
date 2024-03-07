@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Dropzone from "@/components/ui/dropzone"
 import { useCreateVideo } from "../../../../../../hooks/createVideo"
-import { VideoConfigSchema } from "@/types/courseContent"
+import { VideoConfigSchema, videoConfigSchema } from "@/types/courseContent"
 import EditorConvertToHTML from "@/components/self/EditorConvertToHTML"
 import { addMinutes } from "date-fns"
 import { SHA256 } from "crypto-js"
@@ -31,10 +31,9 @@ import VideoAndRichText from "@/components/self/VideoAndRichText"
 
 const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
 
-    // @ts-ignore
-    const videoConfig: VideoConfigSchema = lesson.courseContents[0].lectureConfig;
 
-    const [first, setfirst] = useState(false)
+    const videoConfig = videoConfigSchema.parse(lesson.courseContents[0].lectureConfig);
+
     const [file, setFile] = useState<File>()
     const [richtext, setRichtext] = useState(videoConfig.richText ?? "");
 
@@ -43,10 +42,12 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
     const updateCourseContent = useUpdateCourseContent();
     const deleteVideo = useDeleteVideo();
 
+    const [open, setOpen] = useState(false)
+
     function handleOnDrop(acceptedFiles: FileList | null) {
         if (acceptedFiles && acceptedFiles.length > 0) {
             setFile(acceptedFiles[0]);
-            setfirst(true);
+            setOpen(true)
         } else {
             setFile(undefined);
         }
@@ -54,8 +55,6 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
 
     useEffect(() => {
         if (createVideo.data) {
-            const { data } = createVideo;
-
             const signatureExpire = addMinutes(new Date(), 10).getTime()
             const shaed = SHA256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
             if (file) {
@@ -86,7 +85,8 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
                             lectureConfig: {
                                 id: createVideo.data.guid,
                                 richText: richtext
-                            }
+                            },
+                            lesson: lesson.id
                         })
                     }
                 })
@@ -105,9 +105,17 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
         }
     }, [createVideo.data])
 
+    useEffect(() => {
+        if (updateCourseContent.status === "success") {
+            setOpen(false)
+        }
+    }, [updateCourseContent.status])
+
+
     function updateRichText() {
         updateCourseContent.mutate({
             id: lesson.courseContents[0].id,
+            lesson: lesson.id,
             lectureType: "video",
             lectureConfig: {
                 id: videoConfig.id,
@@ -129,6 +137,17 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
         <Dropzone dropMessage="Hier ablassen, wenn Änderung gewünscht"
             handleOnDrop={handleOnDrop}
         />
+        <DrawerDialog
+            title="Video hochladen"
+            subTitle="Bitte geben Sie einen Titel ein"
+            trigger={<> </>}
+            openParent={open}
+            setOpenParent={setOpen}
+
+        >
+            {uploadPercent > 0 && <Progress value={uploadPercent} />}
+            <Button onClick={() => createVideo.mutate({})}>Video Ändern</Button>
+        </DrawerDialog>
         <EditorConvertToHTML setText={setRichtext} text={richtext} />
         <Button onClick={updateRichText}>Änderungen speichern</Button>
     </>

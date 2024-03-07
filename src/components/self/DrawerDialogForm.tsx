@@ -318,108 +318,108 @@ export const CreateVideoForm: FC<{ file: File | null, lessonId: string }> = ({ f
     )
 }
 
-export const UpdateVideoForm: FC<{ courseContentId: string, richText: string, videoId: string }> = ({ courseContentId, richText, videoId }) => {
-    const createVideo = useCreateVideo();
-    const [uploadPercent, setUploadPercent] = useState(0);
-    const updateCourseContentVideo = useUpdateCourseContent();
+// export const UpdateVideoForm: FC<{ courseContentId: string, richText: string, videoId: string }> = ({ courseContentId, richText, videoId }) => {
+//     const createVideo = useCreateVideo();
+//     const [uploadPercent, setUploadPercent] = useState(0);
+//     const updateCourseContentVideo = useUpdateCourseContent();
 
-    const { register, setValue, handleSubmit, formState: { errors } } = useForm<{ title: string }>()
-
-
-    const methods = useForm({
-        shouldFocusError: true,
-        shouldUnregister: false,
-        shouldUseNativeValidation: false,
-    });
-
-    useEffect(() => {
-        if (createVideo.status === "success") {
-            const file = methods.getValues("file") as File;
-            const signatureExpire = addMinutes(new Date(), 10).getTime()
-            const shaed = sha256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
-            if (file) {
-                var upload = new tus.Upload(file, {
-                    endpoint: "https://video.bunnycdn.com/tusupload",
-                    retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
-                    headers: {
-                        AuthorizationSignature: shaed, // SHA256 signature (library_id + api_key + expiration_time + video_id)
-                        AuthorizationExpire: signatureExpire.toString(), // Expiration time as in the signature,
-                        VideoId: createVideo.data.guid, // The guid of a previously created video object through the Create Video API call
-                        LibraryId: "140551",
-                    },
-                    metadata: {
-                        filetype: file?.type,
-                        title: file?.name
-                    },
-                    onError: function (error) {
-                        console.log(error)
-                    },
-                    onProgress: function (bytesUploaded, bytesTotal) {
-                        setUploadPercent(((bytesUploaded / bytesTotal) * 100))
-                    },
-                    onSuccess: function () {
-                        // videoDelete.mutate({ videoId: videoId });
-                        updateCourseContentVideo.mutate({
-                            id: courseContentId,
-                            lectureType: "video",
-                            lectureConfig: {
-                                id: createVideo.data.guid,
-                                richText: richText
-                            }
-                        })
-                    }
-                })
-                // Check if there are any previous uploads to continue.
-                upload.findPreviousUploads().then(function (previousUploads) {
-                    // Found previous uploads so we select the first one. 
-                    if (previousUploads.length) {
-                        upload.resumeFromPreviousUpload(previousUploads[0])
-                    }
-
-                    // Start the upload
-                    upload.start()
-                })
-            }
-
-        }
-    }, [createVideo.status])
-
-    useEffect(() => {
-        if (updateCourseContentVideo.status === "success") {
-            axios.delete(`/api/bunny/video/${videoId}`)
-        }
-    }, [updateCourseContentVideo])
+//     const { register, setValue, handleSubmit, formState: { errors } } = useForm<{ title: string }>()
 
 
+//     const methods = useForm({
+//         shouldFocusError: true,
+//         shouldUnregister: false,
+//         shouldUseNativeValidation: false,
+//     });
 
-    async function submitNow() {
-        createVideo.mutate({});
-    }
+//     useEffect(() => {
+//         if (createVideo.status === "success") {
+//             const file = methods.getValues("file") as File;
+//             const signatureExpire = addMinutes(new Date(), 10).getTime()
+//             const shaed = sha256(140551 + "cf17ba05-57c7-47f3-9d965bdb1a7e-660a-415a" + signatureExpire + createVideo.data.guid).toString();
+//             if (file) {
+//                 var upload = new tus.Upload(file, {
+//                     endpoint: "https://video.bunnycdn.com/tusupload",
+//                     retryDelays: [0, 3000, 5000, 10000, 20000, 60000, 60000],
+//                     headers: {
+//                         AuthorizationSignature: shaed, // SHA256 signature (library_id + api_key + expiration_time + video_id)
+//                         AuthorizationExpire: signatureExpire.toString(), // Expiration time as in the signature,
+//                         VideoId: createVideo.data.guid, // The guid of a previously created video object through the Create Video API call
+//                         LibraryId: "140551",
+//                     },
+//                     metadata: {
+//                         filetype: file?.type,
+//                         title: file?.name
+//                     },
+//                     onError: function (error) {
+//                         console.log(error)
+//                     },
+//                     onProgress: function (bytesUploaded, bytesTotal) {
+//                         setUploadPercent(((bytesUploaded / bytesTotal) * 100))
+//                     },
+//                     onSuccess: function () {
+//                         // videoDelete.mutate({ videoId: videoId });
+//                         updateCourseContentVideo.mutate({
+//                             id: courseContentId,
+//                             lectureType: "video",
+//                             lectureConfig: {
+//                                 id: createVideo.data.guid,
+//                                 richText: richText
+//                             }
+//                         })
+//                     }
+//                 })
+//                 // Check if there are any previous uploads to continue.
+//                 upload.findPreviousUploads().then(function (previousUploads) {
+//                     // Found previous uploads so we select the first one. 
+//                     if (previousUploads.length) {
+//                         upload.resumeFromPreviousUpload(previousUploads[0])
+//                     }
 
-    function handleOnDrop(acceptedFiles: FileList | null) {
-        if (acceptedFiles && acceptedFiles.length > 0) {
-            methods.setValue("file", acceptedFiles[0]);
-        } else {
-            methods.setValue("file", null);
-            methods.setError("file", {
-                message: "File is required",
-                type: "typeError",
-            });
-        }
-    }
+//                     // Start the upload
+//                     upload.start()
+//                 })
+//             }
 
-    return (
-        <form onSubmit={handleSubmit(submitNow)} className={cn("grid items-start gap-4")}>
-            <div className="grid gap-2">
-                <Dropzone
-                    dropMessage="Drop files or click here"
-                    classNameWrapper="w-full h-[20vh]" handleOnDrop={handleOnDrop} />
-                {uploadPercent > 0 && <Progress value={uploadPercent} />}
-            </div>
-            <Button disabled={uploadPercent != 0} type="submit">Video Ändern</Button>
-        </form>
-    )
-}
+//         }
+//     }, [createVideo.status])
+
+//     useEffect(() => {
+//         if (updateCourseContentVideo.status === "success") {
+//             axios.delete(`/api/bunny/video/${videoId}`)
+//         }
+//     }, [updateCourseContentVideo])
+
+
+
+//     async function submitNow() {
+//         createVideo.mutate({});
+//     }
+
+//     function handleOnDrop(acceptedFiles: FileList | null) {
+//         if (acceptedFiles && acceptedFiles.length > 0) {
+//             methods.setValue("file", acceptedFiles[0]);
+//         } else {
+//             methods.setValue("file", null);
+//             methods.setError("file", {
+//                 message: "File is required",
+//                 type: "typeError",
+//             });
+//         }
+//     }
+
+//     return (
+//         <form onSubmit={handleSubmit(submitNow)} className={cn("grid items-start gap-4")}>
+//             <div className="grid gap-2">
+//                 <Dropzone
+//                     dropMessage="Drop files or click here"
+//                     classNameWrapper="w-full h-[20vh]" handleOnDrop={handleOnDrop} />
+//                 {uploadPercent > 0 && <Progress value={uploadPercent} />}
+//             </div>
+//             <Button disabled={uploadPercent != 0} type="submit">Video Ändern</Button>
+//         </form>
+//     )
+// }
 
 export const DeleteLernContentForm: FC<{ courseContentId: string, videoId: string }> = ({ courseContentId, videoId }) => {
     const deleteLesson = useDeleteLesson();
