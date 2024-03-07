@@ -1,12 +1,10 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { CourseContentZodSchema, CourseContentZodSchemaForm, CourseContentZodSchemaUpdate, VideoConfigSchema, videoConfigSchema } from "@/types/courseContent";
+import { CourseContentZodSchemaForm, CourseContentZodSchemaFormWithId, VideoConfigSchema, quizConfigSchema, videoConfigSchema } from "@/types/courseContent";
 import { db } from "../../../../db/access";
 import { courseContent } from "../../../../db/schema";
 import { and, eq } from "drizzle-orm";
-import axios from "axios";
-import { CreateVideoRequest } from "../../../../hooks/createVideo";
 
 export async function GET(request: Request) {
     try {
@@ -35,7 +33,15 @@ export async function POST(request: NextRequest) {
                     lectureConfig: videoConfig
                 }).returning();
                 break;
-
+            case "quiz":
+                const quizData = quizConfigSchema.parse(parsedBody.lectureConfig);
+                console.log(quizData)
+                const result2 = await db.insert(courseContent).values({
+                    organization: session.user.organization,
+                    lesson: parsedBody.lesson,
+                    lectureType: parsedBody.lectureType,
+                    lectureConfig: quizData
+                }).returning();
             default:
                 return NextResponse.json({}, { status: 400 })
         }
@@ -54,16 +60,32 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const parsedBody = CourseContentZodSchemaUpdate.parse(body);
-        // hier weiter
+        const parsedBody = CourseContentZodSchemaFormWithId.parse(body);
 
-        const updatetRow = await db.update(courseContent)
-            .set({
-                lectureType: parsedBody.lectureType,
-                lectureConfig: parsedBody.lectureConfig
-            })
-            .where(and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization)))
-            .returning();
+        switch (parsedBody.lectureType) {
+            case "video": {
+                const videoConfig = videoConfigSchema.parse(parsedBody.lectureConfig);
+                const updatetRow = await db.update(courseContent)
+                    .set({
+                        lectureType: parsedBody.lectureType,
+                        lectureConfig: videoConfig
+                    })
+                    .where(and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization)))
+                    .returning();
+                break;
+            }
+            case "quiz": {
+                const quizData = quizConfigSchema.parse(parsedBody.lectureConfig);
+                const updatetRow = await db.update(courseContent)
+                    .set({
+                        lectureType: parsedBody.lectureType,
+                        lectureConfig: quizData
+                    })
+                    .where(and(eq(courseContent.id, parsedBody.id), eq(courseContent.organization, session.user.organization)))
+                    .returning();
+                break;
+            }
+        }
 
         return NextResponse.json({ success: true }, { status: 200 })
     } catch (error) {

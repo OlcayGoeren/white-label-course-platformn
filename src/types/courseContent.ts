@@ -7,25 +7,42 @@ export const videoConfigSchema = z.object({
 
 export type VideoConfigSchema = z.infer<typeof videoConfigSchema>;
 
-const textConfigSchema = z.object({
-    content: z.string(),
-    length: z.number().nonnegative(),
+export const singleQuiz = z.object({
+    question: z.string(),
+    answer1: z.string(),
+    answer2: z.string(),
+    answer3: z.string(),
+    answer4: z.string(),
+    correctAnswer1: z.boolean(),
+    correctAnswer2: z.boolean(),
+    correctAnswer3: z.boolean(),
+    correctAnswer4: z.boolean(),
+});
+export type Quiz = z.infer<typeof singleQuiz>;
+
+
+export const quizConfigSchema = z.object({
+    quizzes: z.array(singleQuiz),
 });
 
-const quizConfigSchema = z.object({
-    questions: z.array(z.string()),
-    timeLimit: z.number().optional(),
-});
-
-const lectureTypeSchema = z.enum(["video", "text", "quiz"]);
+const lectureTypeSchema = z.enum(["video", "quiz"]);
 
 export const CourseContentZodSchemaForm = z.object({
     lesson: z.string().min(4),
     lectureType: lectureTypeSchema,
-    lectureConfig: z.union([videoConfigSchema, textConfigSchema, quizConfigSchema])
+    lectureConfig: z.union([videoConfigSchema, quizConfigSchema])
 });
 
 export type CourseContentSchemaForm = z.infer<typeof CourseContentZodSchemaForm>;
+
+export const CourseContentZodSchemaFormWithId = z.object({
+    id: z.string(),
+    lesson: z.string().min(4),
+    lectureType: lectureTypeSchema,
+    lectureConfig: z.union([videoConfigSchema, quizConfigSchema])
+});
+
+export type CourseContentZodSchemaFormWithId = z.infer<typeof CourseContentZodSchemaFormWithId>;
 
 
 export const CourseContentZodSchema = z.object({
@@ -33,19 +50,10 @@ export const CourseContentZodSchema = z.object({
     organization: z.string(),
     lesson: z.string().min(4),
     lectureType: lectureTypeSchema,
-    lectureConfig: z.union([videoConfigSchema, textConfigSchema, quizConfigSchema])
+    lectureConfig: z.union([videoConfigSchema, quizConfigSchema])
 });
 
 export type CourseContentchema = z.infer<typeof CourseContentZodSchema>;
-
-export const CourseContentZodSchemaUpdate = z.object({
-    id: z.string(),
-    lectureType: lectureTypeSchema,
-    lectureConfig: videoConfigSchema
-});
-
-export type CourseContentZodSchemaUpdate = z.infer<typeof CourseContentZodSchemaUpdate>;
-
 
 export interface CourseContentWithAllRelations extends CourseContentchema {
     // module: ModuleSchema[];
