@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
                 break;
             case "quiz":
                 const quizData = quizConfigSchema.parse(parsedBody.lectureConfig);
+                console.log("hier")
                 console.log(quizData)
                 const result2 = await db.insert(courseContent).values({
                     organization: session.user.organization,
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
                     lectureType: parsedBody.lectureType,
                     lectureConfig: quizData
                 }).returning();
+                break;
             default:
                 return NextResponse.json({}, { status: 400 })
         }

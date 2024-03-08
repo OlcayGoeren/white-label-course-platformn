@@ -40,11 +40,6 @@ const SingleCourseAdmin: FC = () => {
         searchTerms === "participants" && setFirst("participants")
     }, [searchTerms])
 
-    useEffect(() => {
-        console.log(columns)
-        console.log(tasks);
-    }, [columns, tasks])
-
 
     function showChangeButton() {
         setUpdatet(true)

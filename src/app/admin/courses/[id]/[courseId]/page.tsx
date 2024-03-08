@@ -1,12 +1,12 @@
 "use client"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
 import Headline from "@/components/self/Headline"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
-import { CreateVideoForm, DeleteLernContentForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
+import { DeleteLernContentForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
 import _ from "lodash"
 import { useGetAllCourseDetails } from "../../../../../../hooks/getAllCourseDetails"
 import { LessonWithAllRelations } from "@/types/lessons"
@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Dropzone from "@/components/ui/dropzone"
 import { useCreateVideo } from "../../../../../../hooks/createVideo"
-import { VideoConfigSchema, videoConfigSchema } from "@/types/courseContent"
+import { Quiz, videoConfigSchema } from "@/types/courseContent"
 import EditorConvertToHTML from "@/components/self/EditorConvertToHTML"
 import { addMinutes } from "date-fns"
 import { SHA256 } from "crypto-js"
@@ -23,10 +23,31 @@ import * as tus from 'tus-js-client'
 import { useUpdateCourseContent } from "../../../../../../hooks/updateCourseContentVideo"
 import { Progress } from "@/components/ui/progress"
 import { useDeleteVideo } from "../../../../../../hooks/deleteVideo"
-import Quiz from "@/components/self/Quiz"
 import QuizWrapper from "@/components/self/Quiz"
 import VideoAndRichText from "@/components/self/VideoAndRichText"
 
+
+const QuizEdit: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
+
+    const updateCourseContent = useUpdateCourseContent();
+
+
+    function update(quizzes: Quiz[]) {
+        updateCourseContent.mutate({
+            id: lesson.courseContents[0].id,
+            lectureType: "quiz",
+            lectureConfig: {
+                quizzes
+            },
+            lesson: lesson.id
+        })
+    }
+
+    return <>
+        <QuizWrapper foundLesson={lesson} customUpdate={update} />
+        !?test
+    </>
+}
 
 
 const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
@@ -128,9 +149,7 @@ const VideoEditBoard: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) => {
 
 
 
-
     return <>
-        < p > Edit Board</p>
         <iframe className="" allowFullScreen src={`https://iframe.mediadelivery.net/embed/140551/${(videoConfig.id)}?autoplay=false&loop=false&muted=false&preload=false`} />
 
 
@@ -186,14 +205,13 @@ const SingleCourseAdmin: FC = () => {
             case "video":
                 return <VideoEditBoard lesson={courseContent} />
             case "quiz":
-                return <> Quiz filled</>
+                return <QuizEdit lesson={courseContent} />
             default:
                 return <p>Not Found???</p>
         }
     }
 
     function selectEmptyComponents() {
-        console.log(selectedValue);
         switch (selectedValue) {
             case "video":
                 return <VideoAndRichText lesson={lessonFound!} />
@@ -241,26 +259,29 @@ const SingleCourseAdmin: FC = () => {
         </div>
 
 
-        <div className="grid grid-cols-1">
-            <Select
-                onValueChange={(e: "video" | "quiz") => setSelectedValue(e)}
-                value={selectedValue}
-            >
-                <SelectTrigger className="w-[120px]" >
-                    <SelectValue placeholder={"Auswählen"} />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectItem value={"video"}>Video</SelectItem>
-                        <SelectItem value={"quiz"}>Quiz</SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </div>
         {lessonFound.courseContents.length > 0 ?
             selectFilledComponents(lessonFound)
             :
-            selectEmptyComponents()
+            <>
+                <div className="grid grid-cols-1">
+                    <Select
+                        onValueChange={(e: "video" | "quiz") => setSelectedValue(e)}
+                        value={selectedValue}
+                    >
+                        <SelectTrigger className="w-[120px]" >
+                            <SelectValue placeholder={"Auswählen"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value={"video"}>Video</SelectItem>
+                                <SelectItem value={"quiz"}>Quiz</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+                {selectEmptyComponents()}
+            </>
+
 
         }
 
