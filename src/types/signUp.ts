@@ -1,17 +1,7 @@
 import { FieldValues } from "react-hook-form";
 import { ZodType, z } from "zod";
 
-export interface SignUpFormData {
-    email: string;
-    password: string;
-    forname: string;
-    surname: string;
-    birthDate: string;
-    telephone: string;
-    domain: string;
-    iban: string;
-    accountOwner: string;
-}
+
 
 export const SignUpFormDataSchema: ZodType = z.object({
     email: z.string().email(),
@@ -24,6 +14,8 @@ export const SignUpFormDataSchema: ZodType = z.object({
     iban: z.string(), // Example: Basic validation for IBAN length
     accountOwner: z.string(), // Ensuring the string is not empty
 });
+
+export type SignUpFormDataSchema = z.infer<typeof SignUpFormDataSchema>;
 
 
 export const SignInFormDataSchema: ZodType<{ email: string, password: string }> = z.object({

@@ -6,6 +6,9 @@ export default withAuth({
     },
     callbacks: ({
         authorized(params) {
+
+            // dashboard nur noamle user
+
             return params.token?.role === "admin"
         },
     })

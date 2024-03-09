@@ -87,6 +87,7 @@ const SingleCourseAdmin: FC = () => {
     if (!data) return <div>Loading...</div>
 
 
+
     return <ColumnsAndTasksContext.Provider value={{ columns, setColumns, setTasks, tasks }}>
         <div className="flex flex-col gap-3">
             <div className="flex flex-row gap-3">

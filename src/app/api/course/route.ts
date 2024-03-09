@@ -15,8 +15,10 @@ export async function GET(request: Request) {
         }
 
         const courses = await db.query.course.findMany({
-            where: (course, { eq }) => eq(course.organization, session.user.organization),
-        })
+            where: (course, { eq, and }) => eq(course.organization, session.user.organization)
+        });
+
+
         return NextResponse.json({ courses }, { status: 200 })
     } catch (error) {
         console.error(error);

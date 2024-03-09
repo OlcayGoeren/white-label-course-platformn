@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 
 import Headline from "@/components/self/Headline"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { DeleteLernContentForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
 import _ from "lodash"
@@ -177,6 +177,8 @@ const SingleCourseAdmin: FC = () => {
     const router = useRouter();
     const params = useParams<{ id: string, courseId: string }>();
     const { data } = useGetAllCourseDetails(params.id);
+    const currentUrl = window.location.href;
+    const searchParams = useSearchParams();
 
     const [selectedValue, setSelectedValue] = useState<"video" | "quiz">("video")
 
@@ -228,6 +230,7 @@ const SingleCourseAdmin: FC = () => {
         return <p>Not Found</p>
     }
 
+
     return <>
         <div className="flex flex-row items-start justify-between">
             <div className="flex flex-col gap-4">
@@ -245,7 +248,6 @@ const SingleCourseAdmin: FC = () => {
                 </div>
             </div>
             <div className="flex flex-row gap-3">
-                <Button variant={"outline"}>Preview</Button>
                 <DrawerDialog
                     trigger={<Button variant={"destructive"}>Löschen</Button>}
                     title="Lerninhalt löschen"
