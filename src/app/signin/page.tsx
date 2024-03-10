@@ -14,7 +14,12 @@ const SignInNormalUser: FC = () => {
     // organizationMapper
     // Wenn nicht verfügbar error werfen
     const router = useRouter();
+
     const hostname = window.location.hostname
+
+    const queryString = window.location.search;
+    const parameters = new URLSearchParams(queryString);
+    const value = parameters.get('callbackUrl');
 
     const { register, handleSubmit, formState: { errors } } = useForm<SignInFormDataSchema>({
         defaultValues: {
@@ -33,8 +38,13 @@ const SignInNormalUser: FC = () => {
             },
             {}
         )
+    
 
-        router.push("/dashboard");
+        if (value) {
+            router.push(decodeURIComponent(value));
+        } else {
+            router.push("/dashboard");
+        }
     }
 
     return <>

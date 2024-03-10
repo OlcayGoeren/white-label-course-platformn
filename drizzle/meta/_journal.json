@@ -57,6 +57,13 @@
       "when": 1709490008516,
       "tag": "0007_futuristic_terrax",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1710071018277,
+      "tag": "0008_safe_stardust",
+      "breakpoints": true
     }
   ]
 }

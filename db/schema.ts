@@ -10,6 +10,7 @@ export const organization = pgTable('Organization', {
   telephone: text('telephone').notNull(),
   domain: text('domain').unique().notNull(),
   iban: text('iban').notNull(),
+  companyName: text('iban').notNull(),
   accountOwner: text('accountOwner').notNull(),
 });
 
@@ -245,7 +246,7 @@ export const questionAnswerRelations = relations(question, ({ many }) => ({
 
 export const invoice = pgTable('Invoice', {
   id: uuid('id').defaultRandom().primaryKey(),
-  amount: integer('text'),
+  amount: integer('amount'),
   date: timestamp('date', { mode: "string" }).defaultNow(),
   user: uuid('user').references((): AnyPgColumn => user.id, { onDelete: "cascade" }),
   course: uuid('course').references((): AnyPgColumn => course.id, { onDelete: "cascade" }),

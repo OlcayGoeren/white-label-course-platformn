@@ -1,0 +1,1 @@
+ALTER TABLE "Invoice" RENAME COLUMN "text" TO "amount";
