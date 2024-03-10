@@ -18,8 +18,19 @@ export async function GET(request: Request) {
             where: (course, { eq, and }) => eq(course.organization, session.user.organization)
         });
 
+        const modules = await db.query.module.findMany({
+            where: (module, { eq, and, inArray }) => inArray(module.course, courses.map(ele => ele.id))
+        });
 
-        return NextResponse.json({ courses }, { status: 200 })
+
+
+        const coursesWithModules = courses.filter((course) => {
+            return modules.some((module) => module.course === course.id)
+        })
+
+
+
+        return NextResponse.json({ courses: coursesWithModules }, { status: 200 })
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error }, { status: 400 })

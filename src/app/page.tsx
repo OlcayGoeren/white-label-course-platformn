@@ -5,6 +5,7 @@ import { useGetActiveCoursesByOrga } from "../../hooks/getActiveCoursesByOrganiz
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
 import { useRouter } from "next/navigation";
+import CourseTile from "@/components/self/CourseTile";
 
 const CoursesOverview: FC = () => {
 
@@ -15,15 +16,7 @@ const CoursesOverview: FC = () => {
     <div className="flex justify-center items-center min-h-screen">
       <main className="grid grid-cols-1  md:grid-cols-3 gap-2 ">
         {acitveCourses.data?.courses.map((course) => {
-          return <Card>
-            <CardHeader>
-              <CardTitle>{course.title}</CardTitle>
-              <CardDescription>{course.description}</CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button onClick={() => router.push("/courses/" + course.id)}>Kurs ansehen</Button>
-            </CardFooter>
-          </Card>
+          return <CourseTile course={{ ...course, enrolled: false }} />
         })}
       </main>
     </div>

@@ -26,6 +26,21 @@ export type CourseSchema = z.infer<typeof CourseZodSchema>;
 export type CourseStatus = "active" | "inactive";
 export const courseTableStatuses: CourseStatus[] = ["active", "inactive",];
 
+export const CourseWithEnrollmentsZodSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string().optional(),
+    status: z.enum(["active", "inactive"]),
+    instructor: z.string(),
+    questions: z.string().optional(),
+    price: z.number().optional(),
+    organization: z.string(),
+    createdAt: z.date(),
+    enrolled: z.boolean()
+});
+
+export type CourseWithEnrollmentsZodSchemaType = z.infer<typeof CourseWithEnrollmentsZodSchema>;
+
 
 export interface CourseWithAllRelations extends CourseSchema {
     // module: ModuleSchema[];
