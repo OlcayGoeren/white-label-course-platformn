@@ -7,6 +7,11 @@ import { lesson } from "../../../../db/schema";
 
 export async function GET(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
         return NextResponse.json({ success: true }, { status: 200 })
     } catch (error) {
         console.error(error);

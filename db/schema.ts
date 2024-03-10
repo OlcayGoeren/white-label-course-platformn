@@ -129,7 +129,7 @@ export const moduleLessonRelations = relations(module, ({ many }) => ({
 
 export const courseContent = pgTable('CourseContent', {
   id: uuid('id').defaultRandom().primaryKey(),
-  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id, { onDelete: "cascade" }),
+  lesson: uuid('lesson').references((): AnyPgColumn => lesson.id, { onDelete: "cascade" }).notNull(),
   lectureType: text('lectureType'),
   lectureConfig: json('lectureConfig'),
   organization: uuid('organization').references((): AnyPgColumn => organization.id, { onDelete: "cascade" }).notNull(),
