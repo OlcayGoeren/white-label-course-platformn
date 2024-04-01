@@ -13,9 +13,6 @@ import { useForm } from "react-hook-form";
 
 
 const SignInNormalUser: FC = () => {
-
-    // organizationMapper
-    // Wenn nicht verfügbar error werfen
     const router = useRouter();
     const hostname = window.location.hostname
 
@@ -40,6 +37,7 @@ const SignInNormalUser: FC = () => {
     return <>
         <div className="h-screen flex items-center justify-center">
             <form className="grid grid-cols-1 gap-2" onSubmit={handleSubmit(submit)}>
+                <h1>Registrieren</h1>
                 <Headline variant="h4">
                     Persönliche Daten
                 </Headline>

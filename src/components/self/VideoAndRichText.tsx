@@ -48,10 +48,10 @@ const VideoAndRichText: FC<{ lesson: LessonWithAllRelations }> = ({ lesson }) =>
         handleOnDrop={handleOnDrop}
     />
 
-        <DrawerDialog openParent={openDrawer} setOpenParent={setOpenDrawer} title="Video hochladen" subTitle="Bitte geben Sie einen Titel ein"
+        <DrawerDialog openParent={openDrawer} setOpenParent={setOpenDrawer} title="Video hochladen" subTitle="Sind Sie sich sicher?"
             trigger={<> </>}
         >
-            <CreateVideoForm lessonId={lesson.id} file={methods.watch("file")} />
+            <CreateVideoForm setDrawer={setOpenDrawer} lessonId={lesson.id} file={methods.watch("file")} />
         </DrawerDialog>
 
         <EditorConvertToHTML setText={setText} text={text} />

@@ -1,4 +1,3 @@
-import { SignUpFormData } from '@/types/signUp';
 import React, { HTMLInputTypeAttribute } from 'react';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 

@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
 import { BuyInvoiceSchema, BuyInvoiceSchemaType } from "@/types/invoice";
 import { invoice } from "../../../../db/schema";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {

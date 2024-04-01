@@ -90,7 +90,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
             <span className="sr-only">Move task</span>
             <GripVertical />
           </Button>
-          <Link className="hover:underline" href={"/admin/courses/" + params.id + "/" + task.id}>{task.content}</Link>
+          <Link className="hover:underline" href={"/admin/dashboard/courses/" + params.id + "/" + task.id}>{task.content}</Link>
 
         </div>
         <div className="">
@@ -100,7 +100,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {courseTableStatuses.map((status) => <SelectItem value={status}>{status}</SelectItem>)}
+                {courseTableStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
               </SelectGroup>
             </SelectContent>
           </Select>

@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { LessonZodSchemaForm } from "@/types/lessons";
 import { db } from "../../../../db/access";
 import { lesson } from "../../../../db/schema";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {

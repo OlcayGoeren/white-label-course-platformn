@@ -1,10 +1,6 @@
-import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { course } from '../db/schema';
-import { CourseSchemaForm } from '@/types/courses';
 import { GET_COURSES_KEY } from './getCourses';
-import { LessonSchemaForm } from '@/types/lessons';
-import { GET_ALL_COURSE_DETAILS_KEY } from './getAllCourseDetails';
 import { BuyInvoiceSchemaType } from '@/types/invoice';
 // import schema
 
@@ -31,7 +27,7 @@ export const useCreateInvoice = () => {
             mutationFn: createInvoice,
             mutationKey: CREATE_INVOICE,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: GET_ALL_COURSE_DETAILS_KEY })
+                queryClient.invalidateQueries({ queryKey: GET_COURSES_KEY })
             }
         }
     );

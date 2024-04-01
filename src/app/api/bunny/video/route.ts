@@ -1,13 +1,7 @@
-import { CourseZodSchemaForm } from "@/types/courses";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import axios from "axios";
-import { CreateVideoRequest } from "../../../../../hooks/createVideo";
-import { db } from "../../../../../db/access";
-import { courseContent } from "../../../../../db/schema";
-import { CourseContentZodSchemaUpdate } from "@/types/courseContent";
+import { authOptions } from "../../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {

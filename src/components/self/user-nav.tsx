@@ -12,12 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { UserAvatar } from "./user-avatar";
+import { useRouter } from "next/navigation";
 
 type Props = {
     user: Pick<User, "name" | "image" | "email">;
 };
 
 export function UserNav({ user }: Props) {
+
+
+    const router = useRouter();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
@@ -39,8 +44,8 @@ export function UserNav({ user }: Props) {
                     <Button
                         variant="outline"
                         className="w-full"
-                        onClick={() => {
-                            void signOut();
+                        onClick={async () => {
+                            await signOut({ callbackUrl: "/" });
                         }}
                     >
                         <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />

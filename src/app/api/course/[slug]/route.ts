@@ -5,12 +5,13 @@ import { ModuleWithAllRelations } from "@/types/modules";
 import { LessonWithAllRelations } from "@/types/lessons";
 import { CourseContentchema } from "@/types/courseContent";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/authoptions";
 
 // /answer/a --> slug=a
 export async function GET(request: Request,
     { params }: { params: { slug: string } }) {
     try {
+
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -20,12 +21,15 @@ export async function GET(request: Request,
             where: (course, { eq }) => and(eq(course.id, params.slug), eq(course.organization, session.user.organization)),
         })
 
-        const modules = await db.query.module.findMany({
+        const modules = await db.query.modulee.findMany({
             where: (module, { eq }) => and(eq(module.course, course?.id ?? ""), eq(module.organization, session.user.organization)),
             orderBy: (module, { asc }) => [asc(module.order)],
         })
 
-        if (modules.length === 0) return NextResponse.json({ success: false, message: "No modules found" }, { status: 404 });
+        if (modules.length === 0) {
+            const noContent: ModuleWithAllRelations[] = [];
+            return NextResponse.json({ modulesWithRelations: noContent }, { status: 200 })
+        }
 
 
         const lessons = await db.query.lesson.findMany({

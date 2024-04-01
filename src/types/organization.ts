@@ -2,9 +2,12 @@
 import { ZodType, z } from "zod";
 
 
-export const OrganizationSchema: ZodType = z.object({
+export const OrganizationSchema = z.object({
     id: z.string(),
-    companyName: z.string(),
+    telephone: z.string(),
+    domain: z.string(),
+    iban: z.string(),
+    accountOwner: z.string(),
 });
 
-export type OrganizationSchema = z.infer<typeof OrganizationSchema>;
+export type OrganizationSchemaType = z.infer<typeof OrganizationSchema>;

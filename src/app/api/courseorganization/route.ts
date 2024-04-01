@@ -1,11 +1,6 @@
-import { CourseZodSchemaForm } from "@/types/courses";
-import { getServerSession } from "next-auth";
+
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
-import { course, lesson, module as moduleSchema, organization } from "../../../../db/schema";
-import { UpdateCourseOrder } from "../../../../hooks/updateCourseOrder";
-import { eq } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
     try {
@@ -19,7 +14,7 @@ export async function GET(request: NextRequest) {
         if (!foundOrga) return NextResponse.json({ success: false, message: "No organization found" }, { status: 404 });
 
         const allCourses = await db.query.course.findMany({
-            where: (course, { eq, and }) => and(eq(course.organization, foundOrga.id), eq(course.status, "active"))
+            where: (course, { eq, and }) => and(eq(course.organization, foundOrga.id))
         })
 
         return NextResponse.json({ success: true, courses: allCourses }, { status: 200 })

@@ -20,5 +20,5 @@ export type SignUpFormDataSchema = z.infer<typeof SignUpFormDataSchema>;
 
 export const SignInFormDataSchema: ZodType<{ email: string, password: string }> = z.object({
     email: z.string().email(),
-    password: z.string().min(8), // Example: Password must be at least 8 characters long
+    password: z.string(), // Example: Password must be at least 8 characters long
 });

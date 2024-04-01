@@ -5,7 +5,7 @@ import { ModuleWithAllRelations } from "@/types/modules";
 import { LessonWithAllRelations } from "@/types/lessons";
 import { CourseContentchema } from "@/types/courseContent";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/authoptions";
 
 // /answer/a --> slug=a
 export async function GET(request: Request,

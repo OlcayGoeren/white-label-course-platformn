@@ -10,8 +10,12 @@ import { SignUpFormDataSchema } from "@/types/signUp";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import LoadingIndicator from "@/components/self/LoadingIndicator";
 
 export default function SignUp() {
+
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter();
   const {
@@ -27,8 +31,8 @@ export default function SignUp() {
 
   async function submitData(data: SignUpFormDataSchema) {
     try {
+      setLoading(true)
       await axios.post('/api/signup', data);
-      // Signup success --> Login
       await signIn(
         "credentials",
         {
@@ -38,43 +42,21 @@ export default function SignUp() {
         },
         {}
       )
-
-
       router.push("/dashboard");
 
     } catch (error) {
-
+      setLoading(false)
     }
-
   }
 
 
   return (
     <main className="flex flex-col lg:flex-row [&>*]:py-10 h-screen">
-      <div className="hidden lg:flex flex-1 flex-col bg-darkBlue items-center px-10">
-        <div className="text-center flex flex-col gap-3">
-          <Headline variant="h2" color="white">
-            LernLab - Die Zukunft des lernens
-          </Headline>
-          <section className="text-lightGray text-lg">
-            EduPulse Online bietet eine revolutionäre White-Label-Plattform, die es Dozenten, Trainern und Bildungsexperten ermöglicht,
-            ihre eigene Online-Lerncommunity zu kreieren und zu verwalten.
-            Unsere Plattform dient als Ihr persönliches Sprungbrett, um Ihre Marke zu etablieren,
-            Ihre Kurse anzubieten und eine engagierte Lerngemeinschaft aufzubauen. Mit EduPulse Online haben Sie die Freiheit und die Werkzeuge,
-            um Ihre Vision eines personalisierten Lernumfelds Wirklichkeit werden zu lassen.
-          </section>
-          <ul className="list-disc text-lightGray text-lg">
-            <li>Vollständige Markenanpassung: Gestalten Sie Ihre Lernplattform so, dass sie Ihre Marke widerspiegelt. Von Logos bis hin zu Farbschemata – Ihre Plattform, Ihre Identität.</li>
-            <li>Eigenständige Community-Bildung: Nutzen Sie unsere Tools, um Ihre eigene Community zu schaffen und zu verwalten. Binden Sie Ihre Lernenden durch Foren, Diskussionen und Gruppeninteraktionen.</li>
-            <li>Einfaches Kursmanagement: Mit unserem intuitiven Dashboard können Sie Kurse erstellen, verwalten und aktualisieren, Teilnehmer verfolgen und Feedback in Echtzeit sammeln.</li>
-            <li>Flexibilität & Skalierbarkeit: Egal, ob Sie gerade erst anfangen oder bereits eine etablierte Marke sind – unsere Plattform wächst mit Ihren Bedürfnissen.</li>
-          </ul>
-        </div>
-      </div>
+      {loading && <LoadingIndicator />}
       <div className="flex flex-col gap-10 items-center lg:pt-0 flex-1 xl:flex-col ">
         <div className="flex flex-col justify-center items-center">
           <Headline variant="h1">
-            Create an Account
+            Registrieren Admin
           </Headline>
           <Headline variant="sub">
             Already have an account? <Link className="underline" href="/signin">Sign in</Link>
@@ -91,7 +73,7 @@ export default function SignUp() {
             <InputLabel errors={errors} label="Telefon" type="tel" id="telephone" register={register} />
 
             <Headline variant="h4">
-              Organisation Daten
+              Firmen Daten
             </Headline>
             <InputLabel errors={errors} label="Domain" type="text" id="domain" register={register} />
             <InputLabel errors={errors} label="IBAN" type="text" id="iban" register={register} />
@@ -101,7 +83,7 @@ export default function SignUp() {
             </Headline>
             <InputLabel errors={errors} label="E-Mail" type="email" id="email" register={register} />
             <InputLabel errors={errors} label="Passwort" type="password" id="password" register={register} />
-            <Button className="">Enroll now</Button>
+            <Button className="">Jetzt registrieren</Button>
           </section>
         </form>
       </div>

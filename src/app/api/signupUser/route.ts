@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../db/access";
-import { organization, user } from "../../../../db/schema";
-import { SignUpFormDataSchema } from "@/types/signUp";
-import { eq } from "drizzle-orm";
+import { user } from "../../../../db/schema";
 import { hashSync } from "bcrypt";
 import { SignUpFormDataSchemaUser, SignUpFormDataSchemaUserType } from "@/types/signupUser";
 
@@ -34,6 +32,7 @@ export async function POST(request: NextRequest) {
             birthdate: postgresBirthDate,
             organization: organizationFound.id,
             password: hashSync(validatedBody.password, 10),
+            role: 'user'
         })
         return NextResponse.json({ success: true }, { status: 200 })
 

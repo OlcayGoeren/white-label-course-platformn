@@ -12,12 +12,12 @@ export async function GET(request: Request,
     try {
 
         const course = await db.query.course.findFirst({
-            where: (course, { eq }) => and(eq(course.id, params.slug), eq(course.status, "active")),
+            where: (course, { eq }) => and(eq(course.id, params.slug)),
         })
 
-        const modules = await db.query.module.findMany({
-            where: (module, { eq }) => and(eq(module.course, course?.id ?? "")),
-            orderBy: (module, { asc }) => [asc(module.order)],
+        const modules = await db.query.modulee.findMany({
+            where: (modulee, { eq }) => and(eq(modulee.course, course?.id ?? "")),
+            orderBy: (modulee, { asc }) => [asc(modulee.order)],
         })
 
         if (modules.length === 0) return NextResponse.json({ success: false, message: "No modules found" }, { status: 404 });
@@ -25,15 +25,14 @@ export async function GET(request: Request,
 
         const lessons = await db.query.lesson.findMany({
             where: (lesson, { eq, inArray }) => and(
-                modules.length > 0 ? inArray(lesson.module, modules.map((module) => module.id)) : undefined
-                , eq(lesson.status, "active")),
+                inArray(lesson.module, modules.map((modulee) => modulee.id))),
             orderBy: (lesson, { asc }) => [asc(lesson.order)],
         })
 
-        const modulesWithRelations: ModuleWithAllRelations[] = modules.map((module) => {
-            const newModule = module as unknown as ModuleWithAllRelations;
+        const modulesWithRelations: ModuleWithAllRelations[] = modules.map((modulee) => {
+            const newModule = modulee as unknown as ModuleWithAllRelations;
             const newLessons = lessons as unknown as LessonWithAllRelations[];
-            newModule.lessons = newLessons.filter((lesson) => lesson.module === module.id);
+            newModule.lessons = newLessons.filter((lesson) => lesson.module === modulee.id);
             return newModule;
         });
 

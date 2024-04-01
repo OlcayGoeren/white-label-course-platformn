@@ -2,8 +2,8 @@ import { CourseZodSchemaForm } from "@/types/courses";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import axios from "axios";
+import { authOptions } from "../../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {

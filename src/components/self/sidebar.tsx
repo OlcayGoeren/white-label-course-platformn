@@ -22,31 +22,31 @@ export const NavItems: NavItem[] = [
   {
     title: "Alle Kurse",
     icon: Book,
-    href: "/admin/courses",
+    href: "/admin/dashboard/courses",
     color: "text-sky-500",
   },
   {
     title: "Analytics",
     icon: BarChart3,
-    href: "/admin/analytics",
+    href: "/admin/dashboard/analytics",
     color: "text-orange-500",
   },
   {
     title: "Profil",
     icon: UserRound,
-    href: "/admin/profile",
+    href: "/admin/dashboard/profile",
     color: "text-sky-500",
   },
   {
     title: "Erinnerung",
     icon: LayoutList,
-    href: "/admin/notifications",
+    href: "/admin/dashboard/notifications",
     color: "text-sky-500",
   },
   {
     title: "Erinnerung",
     icon: Settings,
-    href: "/admin/settings",
+    href: "/admin/dashboard/settings",
     color: "text-sky-500",
   },
 ];

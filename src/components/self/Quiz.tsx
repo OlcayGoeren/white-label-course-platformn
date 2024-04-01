@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { LessonWithAllRelations } from "@/types/lessons";
 import { Quiz, quizConfigSchema } from "@/types/courseContent";
 import { useCreateCourseContent } from "../../../hooks/createCourseContent";
+import LoadingIndicator from "./LoadingIndicator";
 
 
 
@@ -22,6 +23,7 @@ const initQuest: Quiz = {
 
 
 const QuizWrapper: FC<{ foundLesson: LessonWithAllRelations, customUpdate?: (quizzes: Quiz[]) => void }> = ({ foundLesson, customUpdate }) => {
+    const [loader, setLoader] = useState(false);
     const createCourseContent = useCreateCourseContent();
     const [quizzes, setQuizzes] = useState<Quiz[]>([initQuest])
     useEffect(() => {
@@ -32,12 +34,6 @@ const QuizWrapper: FC<{ foundLesson: LessonWithAllRelations, customUpdate?: (qui
         }
     }, [])
 
-    useEffect(() => {
-        console.log("HIER GUCKEN", quizzes)
-    }, [quizzes])
-
-
-
     function addQuestion() {
         setQuizzes(old => [...old, initQuest])
     }
@@ -46,6 +42,7 @@ const QuizWrapper: FC<{ foundLesson: LessonWithAllRelations, customUpdate?: (qui
         if (customUpdate) {
             customUpdate(quizzes)
         } else {
+            setLoader(true)
             createCourseContent.mutate({
                 lesson: foundLesson.id,
                 lectureType: "quiz",
@@ -63,6 +60,7 @@ const QuizWrapper: FC<{ foundLesson: LessonWithAllRelations, customUpdate?: (qui
     }
 
     return <>
+        {loader && <LoadingIndicator />}
         {quizzes.map((ele, index) => {
             return <Quiz key={index} removeIdex={removeIdex} parentQuiz={ele} idx={index} setQuizzes={setQuizzes} />
         })

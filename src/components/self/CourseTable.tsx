@@ -71,7 +71,7 @@ export const columns: ColumnDef<CourseSchema>[] = [
         },
         cell({ row }) {
             const title = String(row.getValue("title"));
-            return <Link href={"/admin/courses/" + row.original.id} className="font-medium hover:underline">{title}</Link>
+            return <Link href={"/admin/dashboard/courses/" + row.original.id} className="font-medium hover:underline">{title}</Link>
         },
     },
     {
@@ -114,7 +114,7 @@ export const columns: ColumnDef<CourseSchema>[] = [
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                        {courseTableStatuses.map((status) => <SelectItem value={status}>{status}</SelectItem>)}
+                        {courseTableStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
                     </SelectGroup>
                 </SelectContent>
             </Select>

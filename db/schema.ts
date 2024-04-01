@@ -10,7 +10,6 @@ export const organization = pgTable('Organization', {
   telephone: text('telephone').notNull(),
   domain: text('domain').unique().notNull(),
   iban: text('iban').notNull(),
-  companyName: text('iban').notNull(),
   accountOwner: text('accountOwner').notNull(),
 });
 
@@ -22,7 +21,8 @@ export const user = pgTable('User', {
   birthdate: date('birthdate').notNull(),
   email: text('email').unique().notNull(),
   password: text('password').notNull(),
-  organization: uuid('organization').references(() => organization.id).notNull()
+  organization: uuid('organization').references(() => organization.id).notNull(),
+  role: text('role').default('user'),
 });
 
 export const userRelations = relations(user, ({ one }) => ({
@@ -62,7 +62,7 @@ export const organizationCourseRelations = relations(organization, ({ many }) =>
   users: many(user),
 }))
 
-export const module = pgTable('Module', {
+export const modulee = pgTable('Module', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   course: uuid('course').references((): AnyPgColumn => course.id).notNull(),
@@ -70,26 +70,26 @@ export const module = pgTable('Module', {
   organization: uuid('organization').references((): AnyPgColumn => organization.id).notNull(),
 });
 
-export const moduleOrganizationRelations = relations(module, ({ one }) => ({
+export const moduleOrganizationRelations = relations(modulee, ({ one }) => ({
   organization: one(organization, {
-    fields: [module.organization],
+    fields: [modulee.organization],
     references: [organization.id]
   }),
 }))
 
 export const organizationModuleRelations = relations(organization, ({ many }) => ({
-  module: many(module),
+  modulee: many(modulee),
 }))
 
-export const moduleCourseRelations = relations(module, ({ one }) => ({
+export const moduleCourseRelations = relations(modulee, ({ one }) => ({
   organization: one(course, {
-    fields: [module.course],
+    fields: [modulee.course],
     references: [course.id]
   }),
 }))
 
 export const courseModuleRelations = relations(course, ({ many }) => ({
-  module: many(module),
+  modulee: many(modulee),
 }))
 
 
@@ -98,7 +98,7 @@ export const lesson = pgTable('Lesson', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
   description: text('description'),
-  module: uuid('module').references((): AnyPgColumn => module.id, { onDelete: "cascade" }),
+  module: uuid('module').references((): AnyPgColumn => modulee.id, { onDelete: "cascade" }),
   order: integer('order'),
   status: text('status').default('inactive'),
   allowPreview: boolean('allowPreview').default(false),
@@ -117,13 +117,13 @@ export const organizationLessonRelations = relations(organization, ({ many }) =>
 }))
 
 export const lessonModuleRelations = relations(lesson, ({ one }) => ({
-  organization: one(module, {
+  organization: one(modulee, {
     fields: [lesson.module],
-    references: [module.id]
+    references: [modulee.id]
   }),
 }))
 
-export const moduleLessonRelations = relations(module, ({ many }) => ({
+export const moduleLessonRelations = relations(modulee, ({ many }) => ({
   module: many(lesson),
 }))
 

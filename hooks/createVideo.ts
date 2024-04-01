@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { QUERY_KEY } from './getFilesForAppointment';
+import { GET_ALL_COURSE_DETAILS_KEY } from './getAllCourseDetails';
 
 type Caption = {
     srclang: string;
@@ -82,7 +82,7 @@ export const useCreateVideo = () => {
             mutationFn: createVideo,
             mutationKey: UPLOAD_VIDEO,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+                queryClient.invalidateQueries({ queryKey: GET_ALL_COURSE_DETAILS_KEY })
             }
         }
     );

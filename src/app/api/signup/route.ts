@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
             surname: body.surname,
             birthdate: postgresBirthDate,
             organization: organizationId,
-            password: pw
+            password: pw,
+            role: 'admin'
         }).returning();
 
         userId = result2[0].id;

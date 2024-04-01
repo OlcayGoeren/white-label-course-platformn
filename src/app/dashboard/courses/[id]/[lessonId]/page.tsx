@@ -5,20 +5,18 @@ import { useGetLessonById } from "../../../../../../hooks/getLessonById";
 import Headline from "@/components/self/Headline";
 import { CourseContentchema, quizConfigSchema, videoConfigSchema } from "@/types/courseContent";
 import { Button } from "@/components/ui/button";
+import LoadingIndicator from "@/components/self/LoadingIndicator";
 
 
 const DashboardLessonPage: FC = () => {
     const params = useParams<{ id: string, lessonId: string }>();
 
-    const { data: lessonData } = useGetLessonById(params.lessonId);
+    const { data: lessonData, isLoading } = useGetLessonById(params.lessonId);
     const [result, setResult] = useState<string | undefined>()
 
 
 
     function checkQuiz() {
-
-
-
         // get all inputs
         const inputs = document.querySelectorAll("input");
         const answers: string[] = [];
@@ -105,7 +103,7 @@ const DashboardLessonPage: FC = () => {
                 return (
                     <div className="grid grid-cols-1 md:w-[33vw]">
                         {quizConfig.quizzes.map((quiz, index) => {
-                            return <div className="py-4">
+                            return <div key={index} className="py-4">
                                 <div className="grid grid-cols-1 gap-2 border-2 border-black p-3 rounded-lg">
                                     <div className="border-2 rounded-lg p-3 mb-5">
                                         <p>{quiz.question}</p>
@@ -138,7 +136,12 @@ const DashboardLessonPage: FC = () => {
 
     }
 
-    if (lessonData === undefined) return <p>Loading...</p>;
+    if (isLoading && lessonData === undefined) {
+        return <LoadingIndicator />
+    }
+
+
+
 
     return (
         <div>
@@ -156,7 +159,7 @@ const DashboardLessonPage: FC = () => {
                             <p className="p-2 rounded-lg border-2 border-black w-fit">{result}</p>
                             <Button className="w-fit" onClick={() => setResult(undefined)}>Nochmal</Button>
                         </div>
-                    </> : renderLearnContent(lessonData.courseContent)
+                    </> : renderLearnContent(lessonData!.courseContent)
                 }
             </main>
 

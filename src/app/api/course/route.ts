@@ -1,11 +1,11 @@
 import { CourseZodSchemaForm } from "@/types/courses";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
-import { course, lesson, module as moduleSchema } from "../../../../db/schema";
+import { course, lesson, modulee } from "../../../../db/schema";
 import { UpdateCourseOrder } from "../../../../hooks/updateCourseOrder";
 import { eq } from "drizzle-orm";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {
@@ -18,19 +18,7 @@ export async function GET(request: Request) {
             where: (course, { eq, and }) => eq(course.organization, session.user.organization)
         });
 
-        const modules = await db.query.module.findMany({
-            where: (module, { eq, and, inArray }) => inArray(module.course, courses.map(ele => ele.id))
-        });
-
-
-
-        const coursesWithModules = courses.filter((course) => {
-            return modules.some((module) => module.course === course.id)
-        })
-
-
-
-        return NextResponse.json({ courses: coursesWithModules }, { status: 200 })
+        return NextResponse.json({ courses }, { status: 200 })
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error }, { status: 400 })
@@ -73,9 +61,9 @@ export async function PUT(request: NextRequest) {
         const body = await request.json() as UpdateCourseOrder;
 
         body.modules.forEach(async (moduleEle) => {
-            const result = await db.update(moduleSchema)
+            const result = await db.update(modulee)
                 .set({ order: moduleEle.order })
-                .where(eq(moduleSchema.id, moduleEle.id)).returning(({ updatedId: moduleSchema.id }));
+                .where(eq(modulee.id, moduleEle.id)).returning(({ updatedId: modulee.id }));
         });
         body.lessons.forEach(async (lessonsEle) => {
             const result = await db.update(lesson)

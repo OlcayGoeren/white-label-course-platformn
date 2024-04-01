@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { CourseContentZodSchemaForm, CourseContentZodSchemaFormWithId, VideoConfigSchema, quizConfigSchema, videoConfigSchema } from "@/types/courseContent";
 import { db } from "../../../../db/access";
 import { courseContent } from "../../../../db/schema";
 import { and, eq } from "drizzle-orm";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {
@@ -35,8 +35,6 @@ export async function POST(request: NextRequest) {
                 break;
             case "quiz":
                 const quizData = quizConfigSchema.parse(parsedBody.lectureConfig);
-                console.log("hier")
-                console.log(quizData)
                 const result2 = await db.insert(courseContent).values({
                     organization: session.user.organization,
                     lesson: parsedBody.lesson,

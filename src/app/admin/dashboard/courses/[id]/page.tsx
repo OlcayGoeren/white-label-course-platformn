@@ -1,5 +1,5 @@
 "use client"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
@@ -8,15 +8,16 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ExternalLink, Plus } from "lucide-react"
-import { useGetAllCourseDetails } from "../../../../../hooks/getAllCourseDetails"
+import { useGetAllCourseDetails } from "../../../../../../hooks/getAllCourseDetails"
 import KanbanBoard from "@/components/kanban/KanbanBoard"
-import { CreateCourseForm, CreateModuleForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
+import { CreateModuleForm, DrawerDialog } from "@/components/self/DrawerDialogForm"
 import { Column } from "@/components/kanban/BoardColumn"
 import { Task } from "@/components/kanban/TaskCard"
 import { ColumnsAndTasksContext } from "@/context/columnsTasks.context"
 import _ from "lodash"
-import { LessonSchemaForm } from "@/types/lessons"
-import { useUpdateCourseOrder } from "../../../../../hooks/updateCourseOrder"
+import { useUpdateCourseOrder } from "../../../../../../hooks/updateCourseOrder"
+import { useGetCourses } from "../../../../../../hooks/getCourses"
+import LoadingIndicator from "@/components/self/LoadingIndicator"
 
 
 const SingleCourseAdmin: FC = () => {
@@ -25,6 +26,7 @@ const SingleCourseAdmin: FC = () => {
     const [tasks, setTasks] = useState<Task[]>([])
     const params = useParams<{ id: string }>()
     const { data, dataUpdatedAt } = useGetAllCourseDetails(params.id);
+    const { data: courses } = useGetCourses();
 
     const [updatet, setUpdatet] = useState(false);
 
@@ -84,23 +86,22 @@ const SingleCourseAdmin: FC = () => {
     }
 
 
-    if (!data) return <div>Loading...</div>
-
+    if (!data && !courses) return <LoadingIndicator />
 
 
     return <ColumnsAndTasksContext.Provider value={{ columns, setColumns, setTasks, tasks }}>
         <div className="flex flex-col gap-3">
             <div className="flex flex-row gap-3">
-                <img width={350} height={150} src={"https://via.placeholder.com/350x150"} alt={"random"} />
+                <img width={350} height={150} src={"https://via.placeholder.com/350x150"} alt={"example"} />
                 <div className="flex flex-col  justify-between">
                     <Headline variant="h1" color="black">
-                        Beginner: JavaScript
+                        {courses?.courses.find(course => course.id === params.id)?.title ?? "Kursname"}
                     </Headline>
 
                     <div className="flex flex-row gap-3">
-                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "course" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=course"}>Kurs</Link>
-                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "settings" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=settings"}>Einstellungen</Link>
-                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "participants" && "font-bold text-black"))} href={"/admin/courses/" + params.id + "?section=participants"}>Teilnehmer</Link>
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "course" && "font-bold text-black"))} href={"/admin/dashboard/courses/" + params.id + "?section=course"}>Kurs</Link>
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "settings" && "font-bold text-black"))} href={"/admin/dashboard/courses/" + params.id + "?section=settings"}>Einstellungen</Link>
+                        <Link className={cn("text-xl text-gray-700 font-medium", (first === "participants" && "font-bold text-black"))} href={"/admin/dashboard/courses/" + params.id + "?section=participants"}>Teilnehmer</Link>
                     </div>
 
                 </div>
@@ -119,7 +120,7 @@ const SingleCourseAdmin: FC = () => {
                         <Plus className="mr-2 h-4 w-4" />
                         Modul Hinzufügen
                     </Button>}>
-                    <CreateModuleForm modules={data.modulesWithRelations ?? []} />
+                    <CreateModuleForm courseId={params.id} modules={data?.modulesWithRelations ?? []} />
                 </DrawerDialog>
                 {updatet && <Button onClick={updateOrder} variant={"destructive"}>Reihenfolge aktualisieren</Button>}
             </div>

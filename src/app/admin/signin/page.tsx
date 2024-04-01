@@ -1,21 +1,18 @@
 "use client"
 import Headline from "@/components/self/Headline";
 import InputLabel from "@/components/self/InputLabel";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Link from "next/link";
-import Autoplay from "embla-carousel-autoplay"
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignInFormDataSchema, SignUpFormDataSchema } from "@/types/signUp";
+import { SignInFormDataSchema } from "@/types/signUp";
 import { signIn } from "next-auth/react";
-import { useEffect } from "react";
+import { useState } from "react";
+import LoadingIndicator from "@/components/self/LoadingIndicator";
 
 export default function SignIn() {
-
+    const [load, setLoad] = useState(false)
+    const [error, setError] = useState(false)
     const router = useRouter();
     const {
         register,
@@ -28,6 +25,7 @@ export default function SignIn() {
 
     async function submitData(data: { email: string, password: string }) {
         try {
+            setLoad(true)
             const result = await signIn(
                 "credentials",
                 {
@@ -38,36 +36,34 @@ export default function SignIn() {
                 {}
             )
 
-            router.push("/admin/courses");
+            if (result?.ok) {
+                router.push("/admin/dashboard/courses");
+            } else {
+                setError(true)
+                setLoad(false)
+            }
+
         } catch (error) {
-            console.log(error)
+            setError(true)
+            setLoad(false)
 
         }
     }
 
-    useEffect(() => {
-        router.push("/dashboard");
-    }, [router])
-
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center md:flex-row">
-            <div className="hidden lg:flex flex-1 flex-col h-screen w-full bg-darkBlue items-center justify-center">
-                <Image alt="company" width={300} height={100} src={"/brand.png"} />
-            </div>
+            {load && <LoadingIndicator />}
             <div className="flex flex-col flex-1 py-10 items-center">
-                <header className="flex flex-col gap-1 lg:gap-4  items-center">
-                    <Image className="lg:hidden w-32" alt="company" width={300} height={100} src={"/brand.png"} />
+                <header className="flex flex-col gap-1  items-center">
                     <Headline variant="h1">
-                        Create an account
-                    </Headline>
-                    <Headline variant="sub">
-                        Already have an account? <Link className="underline" href="/login">Sign in</Link>
+                        Login Admin
                     </Headline>
                 </header>
-                <form onSubmit={handleSubmit(submitData)} className="flex flex-col items-center justify-center gap-3 lg:gap-7 my-10 lg:my-14 lg:w-[40%]">
+                <form onSubmit={handleSubmit(submitData)} className="flex flex-col items-center justify-center gap-1  my-10 lg:my-14 lg:w-[40%]">
                     <InputLabel register={register} errors={errors} id={"email"} label="Email" type="email" />
                     <InputLabel register={register} errors={errors} id={"password"} label="Password" type="password" />
+                    {error && <p className="text-destructive">Login Daten falsch!</p>}
                     <Button className="px-10 mt-7 lg:mt-16">Sign in</Button>
                 </form>
             </div>

@@ -15,5 +15,5 @@ export const getAllCourseDetails = async (courseId: string) => {
 export const useGetAllCourseDetails = (courseId: string) => {
   return useQuery<{
     modulesWithRelations: ModuleWithAllRelations[]
-  }, Error>({ queryKey: GET_ALL_COURSE_DETAILS_KEY, queryFn: () => getAllCourseDetails(courseId) });
+  }, Error>({ queryKey: GET_ALL_COURSE_DETAILS_KEY, queryFn: () => getAllCourseDetails(courseId), staleTime: 0});
 };

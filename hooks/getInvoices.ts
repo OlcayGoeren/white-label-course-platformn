@@ -15,5 +15,5 @@ export const getInvoices = async () => {
 export const useGetInvoices = () => {
   return useQuery<{
     invoices: InvoiceSchemaType[],
-  }, Error>({ queryKey: GET_INVOICES, queryFn: () => getInvoices() });
+  }, Error>({ queryKey: GET_INVOICES, queryFn: () => getInvoices(), retry: 1});
 };

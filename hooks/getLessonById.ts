@@ -19,6 +19,6 @@ export const useGetLessonById = (lessonId: string) => {
     lesson: Lessonchema,
     courseContent: CourseContentchema,
   }, Error>({
-    queryKey: GET_LESSON_BY_ID, queryFn: () => getLessonById(lessonId)
+    queryKey: GET_LESSON_BY_ID, queryFn: () => getLessonById(lessonId), staleTime: 0
   });
 };

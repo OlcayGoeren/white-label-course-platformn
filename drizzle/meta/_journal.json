@@ -64,6 +64,13 @@
       "when": 1710071018277,
       "tag": "0008_safe_stardust",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1711876945665,
+      "tag": "0009_plain_sinister_six",
+      "breakpoints": true
     }
   ]
 }

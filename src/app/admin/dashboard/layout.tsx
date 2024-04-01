@@ -2,7 +2,6 @@
 
 import Header from "@/components/self/header";
 import Sidebar from "@/components/self/sidebar";
-import { Button } from "@/components/ui/button";
 
 export default function AdminLayout({
     children,
@@ -13,9 +12,9 @@ export default function AdminLayout({
         <>
             <Header />
             <div className="flex  border-collapse overflow-hidden">
-
-                <main className="flex-1 overflow-y-auto overflow-x-hidden pt-2  pb-1">
-                    <div className="flex-1  p-8 pt-6">
+                <Sidebar />
+                <main className="flex-1 overflow-y-auto overflow-x-hidden pt-16  pb-1">
+                    <div className="flex-1 space-y-4 p-8 pt-6">
                         {children}
                     </div>
                 </main>

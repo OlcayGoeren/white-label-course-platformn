@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { db } from "../../../../../db/access";
 import { courseContent } from "../../../../../db/schema";
 import { eq } from "drizzle-orm";
+import { authOptions } from "../../auth/[...nextauth]/authoptions";
 
 export async function DELETE(request: Request,
     { params }: { params: { slug: string } }) {

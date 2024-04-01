@@ -10,13 +10,14 @@ import { useGetAllCourseDetailsPublic } from "../../../../hooks/getAllCourseDeta
 import { signIn, useSession } from "next-auth/react";
 import { useGetInvoices } from "../../../../hooks/getInvoices";
 import { useCreateInvoice } from "../../../../hooks/createInvoice";
+import LoadingIndicator from "@/components/self/LoadingIndicator";
 
 
 const SingleCourseSell: FC = () => {
     const params = useParams<{ id: string }>();
-    const { data } = useGetAllCourseDetailsPublic(params.id);
+    const { data, isLoading } = useGetAllCourseDetailsPublic(params.id);
     const { data: sessionData } = useSession();
-    const { data: invoices } = useGetInvoices();
+    const { data: invoices, isLoading: loadingInvoices } = useGetInvoices();
     const router = useRouter();
     const createInvoice = useCreateInvoice();
 
@@ -39,7 +40,12 @@ const SingleCourseSell: FC = () => {
         if (createInvoice.status === "success") {
             redirect(`/dashboard/courses/${params.id}`)
         }
-    }, [createInvoice.status])
+    }, [createInvoice.status, params])
+
+
+    if (isLoading || loadingInvoices) {
+        return <LoadingIndicator />
+    }
 
 
     return <>
@@ -58,6 +64,7 @@ const SingleCourseSell: FC = () => {
                 <div className="w-full">
                     <Accordion type="multiple" className="w-full">
                         {data?.modules.map((module, index) => {
+                            // eslint-disable-next-line react/jsx-key
                             return <AccordionItem className="" value={"item-1" + index}>
                                 <AccordionTrigger className="bg-[#FFDEA7] px-4">
                                     <div className="flex flex-row items-center gap-3">
@@ -70,7 +77,7 @@ const SingleCourseSell: FC = () => {
                                         {module.lessons.map((lesson, index) => {
                                             return <li key={index} className="flex flex-row items-center justify-between">
                                                 {lesson.title}
-                                                <Video />
+                                                {/* <Video /> */}
                                             </li>
                                         })}
                                     </ul>

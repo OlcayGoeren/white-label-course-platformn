@@ -1,9 +1,9 @@
 import { ModuleZodSchemaForm } from "@/types/modules";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
-import { module } from "../../../../db/schema";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
+import { modulee } from "../../../../db/schema";
 
 export async function GET(request: Request) {
     try {
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         const parsedBody = ModuleZodSchemaForm.parse(body);
-        const insertedModule = await db.insert(module).values({
+        const insertedModule = await db.insert(modulee).values({
             title: parsedBody.title,
             course: parsedBody.course,
             order: parsedBody.order,

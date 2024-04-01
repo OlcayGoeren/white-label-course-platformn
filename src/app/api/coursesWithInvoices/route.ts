@@ -1,11 +1,7 @@
-import { CourseZodSchemaForm } from "@/types/courses";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { db } from "../../../../db/access";
-import { course, lesson, module as moduleSchema } from "../../../../db/schema";
-import { UpdateCourseOrder } from "../../../../hooks/updateCourseOrder";
-import { eq } from "drizzle-orm";
+import { authOptions } from "../auth/[...nextauth]/authoptions";
 
 export async function GET(request: Request) {
     try {
@@ -15,7 +11,7 @@ export async function GET(request: Request) {
         }
 
         const courses = await db.query.course.findMany({
-            where: (course, { eq, and }) => and(eq(course.organization, session.user.organization), eq(course.status, "active"))
+            where: (course, { eq, and }) => and(eq(course.organization, session.user.organization))
         });
 
         const invoices = await db.query.invoice.findMany({
@@ -31,7 +27,7 @@ export async function GET(request: Request) {
             }
         })
 
-        const modules = await db.query.module.findMany({
+        const modules = await db.query.modulee.findMany({
             where: (module, { eq, and, inArray }) => inArray(module.course, courses.map(ele => ele.id))
         });
 

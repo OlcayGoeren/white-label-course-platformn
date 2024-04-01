@@ -15,10 +15,10 @@ interface DropzoneProps
 }
 
 const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
-  (
+  function Dropzone(
     { className, classNameWrapper, dropMessage, handleOnDrop, ...props },
     ref
-  ) => {
+  ) {
     const inputRef = useRef<HTMLInputElement | null>(null);
     // Function to handle drag over event
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
